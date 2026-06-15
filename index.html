@@ -366,9 +366,92 @@
 
 <script>
 // ──────────────────────────────────────────────
-// DATA — Se reemplaza por latest.json en producción
+// DATA — Embebida directamente (sin fetch)
+// Para actualizar: reemplazar EMBEDDED_DATA con el contenido de latest.json
 // ──────────────────────────────────────────────
-const DATA_FILE = "./data/latest.json";
+const EMBEDDED_DATA = {
+  "meta": {
+    "periodo": "Marzo 2026",
+    "fecha_reporte": "2026-03-31",
+    "fuente": "Ministerio de Economía y Finanzas del Perú (MEF)",
+    "url_fuente": "https://www.mef.gob.pe/contenidos/deuda_publ/mercado/tenencia_bono_310326.pdf",
+    "total_nominal_mn": 183344
+  },
+  "tenencias_por_tipo": {
+    "Offshores": 45.31, "Pension Funds": 8.42, "Banks": 33.62,
+    "Insurance": 7.38, "Public Funds": 3.74, "Others": 1.16
+  },
+  "outstanding_por_bono": [
+    { "bono": "SOB26", "Offshores": 103,   "PFs": 0,     "Banks": 915,   "Insurance": 85,   "Public Funds": 84,   "Others": 258, "TOTAL": 1446  },
+    { "bono": "SOB28", "Offshores": 520,   "PFs": 0,     "Banks": 2057,  "Insurance": 61,   "Public Funds": 26,   "Others": 140, "TOTAL": 2804  },
+    { "bono": "SOB29", "Offshores": 1318,  "PFs": 22,    "Banks": 6151,  "Insurance": 171,  "Public Funds": 112,  "Others": 251, "TOTAL": 8025  },
+    { "bono": "SOB31", "Offshores": 7544,  "PFs": 396,   "Banks": 5642,  "Insurance": 256,  "Public Funds": 367,  "Others": 355, "TOTAL": 14560 },
+    { "bono": "SOB32", "Offshores": 14166, "PFs": 150,   "Banks": 6937,  "Insurance": 249,  "Public Funds": 311,  "Others": 258, "TOTAL": 22072 },
+    { "bono": "SOB33", "Offshores": 13362, "PFs": 1624,  "Banks": 8745,  "Insurance": 138,  "Public Funds": 172,  "Others": 157, "TOTAL": 24199 },
+    { "bono": "SOB34", "Offshores": 10376, "PFs": 4250,  "Banks": 8083,  "Insurance": 267,  "Public Funds": 818,  "Others": 466, "TOTAL": 24259 },
+    { "bono": "SOB35", "Offshores": 11115, "PFs": 1943,  "Banks": 9226,  "Insurance": 379,  "Public Funds": 157,  "Others": 308, "TOTAL": 23127 },
+    { "bono": "SOB37", "Offshores": 8298,  "PFs": 3894,  "Banks": 5850,  "Insurance": 2361, "Public Funds": 2209, "Others": 375, "TOTAL": 22987 },
+    { "bono": "SOB39", "Offshores": 9608,  "PFs": 1564,  "Banks": 5284,  "Insurance": 1404, "Public Funds": 441,  "Others": 144, "TOTAL": 18445 },
+    { "bono": "SOB40", "Offshores": 5894,  "PFs": 952,   "Banks": 1816,  "Insurance": 3245, "Public Funds": 846,  "Others": 82,  "TOTAL": 12836 },
+    { "bono": "SOB42", "Offshores": 500,   "PFs": 247,   "Banks": 672,   "Insurance": 2327, "Public Funds": 1282, "Others": 12,  "TOTAL": 5040  },
+    { "bono": "SOB55", "Offshores": 252,   "PFs": 399,   "Banks": 266,   "Insurance": 2585, "Public Funds": 31,   "Others": 10,  "TOTAL": 3542  }
+  ],
+  "cambios_mom": {
+    "nota": "Cambios en MM PEN MoM",
+    "nota2": "Banks y PFs afectados por REPOs cerrados durante Marzo entre PFs y Banco Central",
+    "por_inversor": {
+      "Offshores":    { "26s": 0,   "28s": 17,  "29s": -82,  "31s": -147, "32s": -64,  "33s": -380, "34s": -115, "35s": 0,    "37s": 95,   "39s": -265, "40s": 201,   "42s": 0,   "55s": -1,  "Total": -1005 },
+      "PFs":          { "26s": 0,   "28s": 0,   "29s": 0,    "31s": -132, "32s": 0,    "33s": -14,  "34s": 578,  "35s": -401, "37s": 1184, "39s": -66,  "40s": -398,  "42s": 0,   "55s": 0,   "Total": 751   },
+      "Banks":        { "26s": -28, "28s": 83,  "29s": -5,   "31s": 273,  "32s": 60,   "33s": 532,  "34s": -574, "35s": 658,  "37s": 4,    "39s": 314,  "40s": -1056, "42s": 0,   "55s": -4,  "Total": 16    },
+      "Insurance":    { "26s": 0,   "28s": -9,  "29s": -1,   "31s": -2,   "32s": 60,   "33s": -109, "34s": 10,   "35s": 4,    "37s": -3,   "39s": 130,  "40s": 369,   "42s": -49, "55s": 50,  "Total": 471   },
+      "Public Funds": { "26s": 0,   "28s": 0,   "29s": -9,   "31s": -12,  "32s": 0,    "33s": -20,  "34s": -10,  "35s": -264, "37s": -1,   "39s": -3,   "40s": 5,     "42s": 0,   "55s": 0,   "Total": -29   },
+      "Others":       { "26s": 0,   "28s": 11,  "29s": 14,   "31s": -1,   "32s": 22,   "33s": 29,   "34s": 19,   "35s": -3,   "37s": -401, "39s": -24,  "40s": -10,   "42s": 3,   "55s": 17,  "Total": 454   }
+    }
+  },
+  "ownership_pct_por_tenor": {
+    "26s": { "Offshores": 7,  "PFs": 0,  "Banks": 63, "Insurance": 6,  "Public Funds": 6,  "Others": 18 },
+    "28s": { "Offshores": 19, "PFs": 0,  "Banks": 73, "Insurance": 2,  "Public Funds": 1,  "Others": 5  },
+    "29s": { "Offshores": 16, "PFs": 0,  "Banks": 77, "Insurance": 2,  "Public Funds": 1,  "Others": 3  },
+    "31s": { "Offshores": 52, "PFs": 3,  "Banks": 39, "Insurance": 2,  "Public Funds": 3,  "Others": 2  },
+    "32s": { "Offshores": 64, "PFs": 1,  "Banks": 31, "Insurance": 1,  "Public Funds": 1,  "Others": 2  },
+    "33s": { "Offshores": 55, "PFs": 7,  "Banks": 36, "Insurance": 1,  "Public Funds": 1,  "Others": 1  },
+    "34s": { "Offshores": 43, "PFs": 18, "Banks": 33, "Insurance": 1,  "Public Funds": 3,  "Others": 2  },
+    "35s": { "Offshores": 48, "PFs": 8,  "Banks": 40, "Insurance": 2,  "Public Funds": 1,  "Others": 1  },
+    "37s": { "Offshores": 36, "PFs": 17, "Banks": 25, "Insurance": 10, "Public Funds": 10, "Others": 2  },
+    "39s": { "Offshores": 52, "PFs": 8,  "Banks": 29, "Insurance": 8,  "Public Funds": 2,  "Others": 1  },
+    "40s": { "Offshores": 46, "PFs": 7,  "Banks": 14, "Insurance": 25, "Public Funds": 7,  "Others": 1  },
+    "42s": { "Offshores": 10, "PFs": 5,  "Banks": 13, "Insurance": 46, "Public Funds": 25, "Others": 1  },
+    "55s": { "Offshores": 7,  "PFs": 11, "Banks": 8,  "Insurance": 73, "Public Funds": 1,  "Others": 0  }
+  },
+  "evolucion_ownership": [
+    { "fecha": "Mar-23", "Offshores": 42.5, "PFs": 9.6,  "Banks": 33.3, "Insurance": 7.5, "Others": 7.1 },
+    { "fecha": "May-23", "Offshores": 42.8, "PFs": 9.5,  "Banks": 33.4, "Insurance": 7.6, "Others": 6.7 },
+    { "fecha": "Jul-23", "Offshores": 43.0, "PFs": 9.8,  "Banks": 33.2, "Insurance": 7.7, "Others": 6.3 },
+    { "fecha": "Sep-23", "Offshores": 43.5, "PFs": 9.9,  "Banks": 32.8, "Insurance": 7.8, "Others": 6.0 },
+    { "fecha": "Nov-23", "Offshores": 43.8, "PFs": 10.1, "Banks": 32.5, "Insurance": 7.8, "Others": 5.8 },
+    { "fecha": "Jan-24", "Offshores": 44.2, "PFs": 10.0, "Banks": 32.2, "Insurance": 7.7, "Others": 5.9 },
+    { "fecha": "Mar-24", "Offshores": 44.5, "PFs": 10.2, "Banks": 31.8, "Insurance": 7.8, "Others": 5.7 },
+    { "fecha": "May-24", "Offshores": 44.0, "PFs": 10.1, "Banks": 32.0, "Insurance": 7.9, "Others": 6.0 },
+    { "fecha": "Jul-24", "Offshores": 44.3, "PFs": 9.8,  "Banks": 32.5, "Insurance": 7.6, "Others": 5.8 },
+    { "fecha": "Sep-24", "Offshores": 44.2, "PFs": 9.2,  "Banks": 32.7, "Insurance": 7.8, "Others": 6.1 },
+    { "fecha": "Nov-24", "Offshores": 44.4, "PFs": 9.0,  "Banks": 33.1, "Insurance": 7.7, "Others": 5.8 },
+    { "fecha": "Jan-25", "Offshores": 44.2, "PFs": 8.9,  "Banks": 33.3, "Insurance": 7.5, "Others": 6.1 },
+    { "fecha": "Mar-25", "Offshores": 44.5, "PFs": 8.7,  "Banks": 33.0, "Insurance": 7.6, "Others": 6.2 },
+    { "fecha": "May-25", "Offshores": 44.7, "PFs": 8.8,  "Banks": 33.4, "Insurance": 7.3, "Others": 5.8 },
+    { "fecha": "Jul-25", "Offshores": 43.8, "PFs": 9.2,  "Banks": 31.8, "Insurance": 9.0, "Others": 6.2 },
+    { "fecha": "Sep-25", "Offshores": 44.2, "PFs": 10.5, "Banks": 31.3, "Insurance": 8.5, "Others": 5.5 },
+    { "fecha": "Nov-25", "Offshores": 44.6, "PFs": 9.2,  "Banks": 32.7, "Insurance": 7.5, "Others": 6.0 },
+    { "fecha": "Jan-26", "Offshores": 44.2, "PFs": 7.6,  "Banks": 34.5, "Insurance": 7.6, "Others": 6.1 },
+    { "fecha": "Mar-26", "Offshores": 45.3, "PFs": 8.4,  "Banks": 33.6, "Insurance": 7.4, "Others": 5.3 }
+  ],
+  "dv01_mom": {
+    "nota": "Movimientos DV01 MoM en K DV01",
+    "Offshores":  { "26s": -1, "28s": 0,  "29s": -3,  "31s": -10, "32s": -6,  "33s": -28, "34s": -10, "35s": 0,   "37s": 10,  "39s": -36, "40s": 24,   "42s": 0,  "55s": 0  },
+    "PFs":        { "26s": 0,  "28s": 0,  "29s": 0,   "31s": -9,  "32s": 0,   "33s": -1,  "34s": 51,  "35s": -34, "37s": 126, "39s": -9,  "40s": -47,  "42s": 0,  "55s": 0  },
+    "Banks":      { "26s": -1, "28s": 2,  "29s": 0,   "31s": 19,  "32s": 5,   "33s": 39,  "34s": -49, "35s": 56,  "37s": 0,   "39s": 43,  "40s": -123, "42s": 0,  "55s": -1 },
+    "Insurance":  { "26s": 0,  "28s": 0,  "29s": 0,   "31s": 0,   "32s": 5,   "33s": -8,  "34s": 1,   "35s": 0,   "37s": 0,   "39s": 18,  "40s": 44,   "42s": -6, "55s": 13 }
+  }
+};
 
 // Colores por tipo de inversor
 const COLORS = {
@@ -639,26 +722,8 @@ function renderDV01Charts(data) {
 // Init
 // ──────────────────────────────────────────────
 async function init() {
-  let data;
-
-  try {
-    const resp = await fetch(DATA_FILE);
-    if (!resp.ok) throw new Error("No se pudo cargar latest.json");
-    data = await resp.json();
-  } catch (e) {
-    // Fallback: intentar cargar el JSON de marzo 2026 directamente
-    try {
-      const resp2 = await fetch("./data/data_marzo_2026.json");
-      if (!resp2.ok) throw new Error("Tampoco se pudo cargar data_marzo_2026.json");
-      data = await resp2.json();
-    } catch (e2) {
-      document.getElementById("loading").innerHTML =
-        `<div style="color:#f87171;font-size:1rem;padding:32px;text-align:center;">
-          Error cargando datos.<br><small>${e2.message}</small>
-        </div>`;
-      return;
-    }
-  }
+  // Datos embebidos directamente — no requiere fetch ni archivos externos
+  let data = EMBEDDED_DATA;
 
   // Período
   document.getElementById("periodo-badge").textContent = data.meta?.periodo ?? "—";
