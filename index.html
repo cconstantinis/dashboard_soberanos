@@ -371,94 +371,413 @@
 // ──────────────────────────────────────────────
 const EMBEDDED_DATA = {
   "meta": {
-    "periodo": "Abril 2026",
-    "fecha_reporte": "2026-04-30",
+    "periodo": "Apr-2026",
+    "periodo_label": "Abril 2026",
+    "fecha_reporte": "2026-06-15",
     "fuente": "Ministerio de Economía y Finanzas del Perú (MEF)",
-    "url_fuente": "https://www.mef.gob.pe/contenidos/deuda_publ/mercado/tenencia_bono_300426.pdf",
-    "total_nominal_mn": 184500
+    "url_tenencias": "https://www.mef.gob.pe/contenidos/deuda_publ/mercado/tenencia_bono_300426.pdf",
+    "url_stock": "https://www.mef.gob.pe/contenidos/deuda_publ/bonos/internos/bonos_sobe/stock/Stock_bonos_soberanos_010626.pdf",
+    "total_nominal_mn": 0
   },
-  "tenencias_por_tipo": {
-    "Offshores": 46.17, "Pension Funds": 8.32, "Banks": 32.73,
-    "Insurance": 7.33, "Public Funds": 3.73, "Others": 1.37
-  },
-  // ── Outstanding por bono (MM PEN, calculado: % × stock total del bono / 1000)
-  // Stock por bono en unidades desde el PDF de Abril 2026:
-  // SOB26=1,445,972 | SOB28=2,803,921 | SOB29E=8,024,827 | SOB31=14,560,480
-  // SOB32=22,072,320 | SOB33=24,198,607 | SOB34=24,259,300 | SOB35=23,727,365
-  // SOB37=23,287,301 | SOB39=18,669,899 | SOB40=12,836,174 | SOB42=5,040,344 | SOB55=3,542,089
-  // Total MN Nominal = 184,500,018 unidades
+  "tenencias_por_tipo": {},
   "outstanding_por_bono": [
-    { "bono": "SOB26", "Offshores": 101,   "PFs": 0,    "Banks": 917,   "Insurance": 85,   "Public Funds": 84,   "Others": 256, "TOTAL": 1446  },
-    { "bono": "SOB28", "Offshores": 467,   "PFs": 0,    "Banks": 2093,  "Insurance": 61,   "Public Funds": 26,   "Others": 155, "TOTAL": 2804  },
-    { "bono": "SOB29", "Offshores": 1113,  "PFs": 22,   "Banks": 6099,  "Insurance": 171,  "Public Funds": 114,  "Others": 450, "TOTAL": 8025  },
-    { "bono": "SOB31", "Offshores": 7462,  "PFs": 324,  "Banks": 5679,  "Insurance": 265,  "Public Funds": 367,  "Others": 444, "TOTAL": 14560 },
-    { "bono": "SOB32", "Offshores": 13780, "PFs": 250,  "Banks": 7226,  "Insurance": 230,  "Public Funds": 316,  "Others": 237, "TOTAL": 22072 },
-    { "bono": "SOB33", "Offshores": 13313, "PFs": 1961, "Banks": 8424,  "Insurance": 135,  "Public Funds": 177,  "Others": 90,  "TOTAL": 24199 },
-    { "bono": "SOB34", "Offshores": 10796, "PFs": 4356, "Banks": 7676,  "Insurance": 201,  "Public Funds": 820,  "Others": 327, "TOTAL": 24259 },
-    { "bono": "SOB35", "Offshores": 11977, "PFs": 1917, "Banks": 9099,  "Insurance": 358,  "Public Funds": 149,  "Others": 64,  "TOTAL": 23727 },
-    { "bono": "SOB37", "Offshores": 9089,  "PFs": 2926, "Banks": 6325,  "Insurance": 2370, "Public Funds": 2201, "Others": 261, "TOTAL": 23287 },
-    { "bono": "SOB39", "Offshores": 10641, "PFs": 2167, "Banks": 3820,  "Insurance": 1364, "Public Funds": 459,  "Others": 198, "TOTAL": 18670 },
-    { "bono": "SOB40", "Offshores": 5661,  "PFs": 777,  "Banks": 2067,  "Insurance": 3392, "Public Funds": 846,  "Others": 68,  "TOTAL": 12836 },
-    { "bono": "SOB42", "Offshores": 500,   "PFs": 247,  "Banks": 695,   "Insurance": 2303, "Public Funds": 1282, "Others": 12,  "TOTAL": 5040  },
-    { "bono": "SOB55", "Offshores": 252,   "PFs": 399,  "Banks": 264,   "Insurance": 2585, "Public Funds": 31,   "Others": 10,  "TOTAL": 3542  }
+    {
+      "bono": "SOB26",
+      "vencimiento": "12AGO2026",
+      "Offshores": 0,
+      "Pension Funds": 0,
+      "Banks": 0,
+      "Insurance": 0,
+      "Public Funds": 0,
+      "Others": 0,
+      "PFs": 0,
+      "TOTAL": 1446
+    },
+    {
+      "bono": "SOB28",
+      "vencimiento": "12AGO2028",
+      "Offshores": 196,
+      "Pension Funds": 0,
+      "Banks": 0,
+      "Insurance": 0,
+      "Public Funds": 163,
+      "Others": 496,
+      "PFs": 0,
+      "TOTAL": 2804
+    },
+    {
+      "bono": "SOB29",
+      "vencimiento": "12FEB2029",
+      "Offshores": 0,
+      "Pension Funds": 0,
+      "Banks": 0,
+      "Insurance": 0,
+      "Public Funds": 0,
+      "Others": 0,
+      "PFs": 0,
+      "TOTAL": 0
+    },
+    {
+      "bono": "SOB29",
+      "vencimiento": "12FEB2029E",
+      "Offshores": 0,
+      "Pension Funds": 0,
+      "Banks": 0,
+      "Insurance": 0,
+      "Public Funds": 0,
+      "Others": 0,
+      "PFs": 0,
+      "TOTAL": 8025
+    },
+    {
+      "bono": "SOB31",
+      "vencimiento": "12AGO2031",
+      "Offshores": 0,
+      "Pension Funds": 0,
+      "Banks": 0,
+      "Insurance": 0,
+      "Public Funds": 0,
+      "Others": 0,
+      "PFs": 0,
+      "TOTAL": 14560
+    },
+    {
+      "bono": "SOB32",
+      "vencimiento": "12AGO2032",
+      "Offshores": 11308,
+      "Pension Funds": 0,
+      "Banks": 0,
+      "Insurance": 0,
+      "Public Funds": 0,
+      "Others": 0,
+      "PFs": 0,
+      "TOTAL": 22072
+    },
+    {
+      "bono": "SOB33",
+      "vencimiento": "12AGO2033",
+      "Offshores": 0,
+      "Pension Funds": 0,
+      "Banks": 0,
+      "Insurance": 0,
+      "Public Funds": 0,
+      "Others": 0,
+      "PFs": 0,
+      "TOTAL": 24199
+    },
+    {
+      "bono": "SOB34",
+      "vencimiento": "12AGO2034",
+      "Offshores": 0,
+      "Pension Funds": 0,
+      "Banks": 0,
+      "Insurance": 0,
+      "Public Funds": 0,
+      "Others": 0,
+      "PFs": 0,
+      "TOTAL": 24259
+    },
+    {
+      "bono": "SOB35",
+      "vencimiento": "12AGO2035",
+      "Offshores": 0,
+      "Pension Funds": 0,
+      "Banks": 0,
+      "Insurance": 0,
+      "Public Funds": 0,
+      "Others": 0,
+      "PFs": 0,
+      "TOTAL": 24377
+    },
+    {
+      "bono": "SOB37",
+      "vencimiento": "12AGO2037",
+      "Offshores": 0,
+      "Pension Funds": 0,
+      "Banks": 0,
+      "Insurance": 0,
+      "Public Funds": 0,
+      "Others": 0,
+      "PFs": 0,
+      "TOTAL": 23587
+    },
+    {
+      "bono": "SOB39",
+      "vencimiento": "12AGO2039",
+      "Offshores": 9702,
+      "Pension Funds": 0,
+      "Banks": 0,
+      "Insurance": 0,
+      "Public Funds": 0,
+      "Others": 0,
+      "PFs": 0,
+      "TOTAL": 19220
+    },
+    {
+      "bono": "SOB40",
+      "vencimiento": "12AGO2040",
+      "Offshores": 0,
+      "Pension Funds": 0,
+      "Banks": 0,
+      "Insurance": 0,
+      "Public Funds": 0,
+      "Others": 0,
+      "PFs": 0,
+      "TOTAL": 12836
+    },
+    {
+      "bono": "SOB42",
+      "vencimiento": "12FEB2042",
+      "Offshores": 0,
+      "Pension Funds": 0,
+      "Banks": 0,
+      "Insurance": 0,
+      "Public Funds": 0,
+      "Others": 0,
+      "PFs": 0,
+      "TOTAL": 5040
+    },
+    {
+      "bono": "SOB55",
+      "vencimiento": "12FEB2055",
+      "Offshores": 0,
+      "Pension Funds": 0,
+      "Banks": 0,
+      "Insurance": 0,
+      "Public Funds": 0,
+      "Others": 0,
+      "PFs": 0,
+      "TOTAL": 3543
+    }
   ],
-  // ── Cambios MoM (Abril vs Marzo), calculados por diferencia de outstanding
   "cambios_mom": {
-    "nota": "Cambios en MM PEN MoM (Abril 2026 vs Marzo 2026)",
-    "nota2": "Calculado a partir de datos MEF. No incluye ajuste por REPOs.",
+    "nota": "Cambios en MM PEN MoM",
+    "nota2": "Calculado automáticamente desde datos MEF",
     "por_inversor": {
-      "Offshores":    { "26s": -2,  "28s": -53, "29s": -205, "31s": -82,  "32s": -386, "33s": -49,  "34s": 420,  "35s": 862,  "37s": 791,  "39s": 1033, "40s": -233, "42s": 0,   "55s": 0,   "Total": 2096  },
-      "PFs":          { "26s": 0,   "28s": 0,   "29s": 0,    "31s": -72,  "32s": 100,  "33s": 337,  "34s": 106,  "35s": -26,  "37s": -968, "39s": 603,  "40s": -175, "42s": 0,   "55s": 0,   "Total": -95   },
-      "Banks":        { "26s": 2,   "28s": 36,  "29s": -52,  "31s": 37,   "32s": 289,  "33s": -321, "34s": -407, "35s": -127, "37s": 475,  "39s": -1464,"40s": 251,  "42s": 23,  "55s": -2,  "Total": -1260 },
-      "Insurance":    { "26s": 0,   "28s": 0,   "29s": 0,    "31s": 9,    "32s": -19,  "33s": -3,   "34s": -66,  "35s": -21,  "37s": 9,    "39s": -40,  "40s": 147,  "42s": -24, "55s": 0,   "Total": -8    },
-      "Public Funds": { "26s": 0,   "28s": 0,   "29s": 2,    "31s": 0,    "32s": 5,    "33s": 5,    "34s": 2,    "35s": -8,   "37s": -8,   "39s": 18,   "40s": 0,    "42s": 0,   "55s": 0,   "Total": 16    },
-      "Others":       { "26s": -2,  "28s": 15,  "29s": 199,  "31s": 89,   "32s": -21,  "33s": -67,  "34s": -139, "35s": -244, "37s": -114, "39s": 54,   "40s": -14,  "42s": 0,   "55s": 0,   "Total": -244  }
+      "Offshores": {
+        "26s": 0,
+        "28s": 0,
+        "29s": 0,
+        "31s": 0,
+        "32s": 0,
+        "33s": 0,
+        "34s": 0,
+        "35s": 0,
+        "37s": 0,
+        "39s": 0,
+        "40s": 0,
+        "42s": 0,
+        "55s": 0,
+        "Total": 0
+      },
+      "PFs": {
+        "26s": 0,
+        "28s": 0,
+        "29s": 0,
+        "31s": 0,
+        "32s": 0,
+        "33s": 0,
+        "34s": 0,
+        "35s": 0,
+        "37s": 0,
+        "39s": 0,
+        "40s": 0,
+        "42s": 0,
+        "55s": 0,
+        "Total": 0
+      },
+      "Banks": {
+        "26s": 0,
+        "28s": 0,
+        "29s": 0,
+        "31s": 0,
+        "32s": 0,
+        "33s": 0,
+        "34s": 0,
+        "35s": 0,
+        "37s": 0,
+        "39s": 0,
+        "40s": 0,
+        "42s": 0,
+        "55s": 0,
+        "Total": 0
+      },
+      "Insurance": {
+        "26s": 0,
+        "28s": 0,
+        "29s": 0,
+        "31s": 0,
+        "32s": 0,
+        "33s": 0,
+        "34s": 0,
+        "35s": 0,
+        "37s": 0,
+        "39s": 0,
+        "40s": 0,
+        "42s": 0,
+        "55s": 0,
+        "Total": 0
+      },
+      "Public Funds": {
+        "26s": 0,
+        "28s": 0,
+        "29s": 0,
+        "31s": 0,
+        "32s": 0,
+        "33s": 0,
+        "34s": 0,
+        "35s": 0,
+        "37s": 0,
+        "39s": 0,
+        "40s": 0,
+        "42s": 0,
+        "55s": 0,
+        "Total": 0
+      },
+      "Others": {
+        "26s": 0,
+        "28s": 0,
+        "29s": 0,
+        "31s": 0,
+        "32s": 0,
+        "33s": 0,
+        "34s": 0,
+        "35s": 0,
+        "37s": 0,
+        "39s": 0,
+        "40s": 0,
+        "42s": 0,
+        "55s": 0,
+        "Total": 0
+      }
     }
   },
-  // ── Ownership % por tenor (calculado desde % del PDF de Abril)
   "ownership_pct_por_tenor": {
-    "26s": { "Offshores": 7,  "PFs": 0,  "Banks": 63, "Insurance": 6,  "Public Funds": 6,  "Others": 18 },
-    "28s": { "Offshores": 17, "PFs": 0,  "Banks": 75, "Insurance": 2,  "Public Funds": 1,  "Others": 6  },
-    "29s": { "Offshores": 14, "PFs": 0,  "Banks": 76, "Insurance": 2,  "Public Funds": 1,  "Others": 6  },
-    "31s": { "Offshores": 51, "PFs": 2,  "Banks": 39, "Insurance": 2,  "Public Funds": 3,  "Others": 3  },
-    "32s": { "Offshores": 62, "PFs": 1,  "Banks": 33, "Insurance": 1,  "Public Funds": 1,  "Others": 1  },
-    "33s": { "Offshores": 55, "PFs": 8,  "Banks": 34, "Insurance": 1,  "Public Funds": 1,  "Others": 0  },
-    "34s": { "Offshores": 45, "PFs": 18, "Banks": 32, "Insurance": 1,  "Public Funds": 3,  "Others": 1  },
-    "35s": { "Offshores": 50, "PFs": 8,  "Banks": 38, "Insurance": 2,  "Public Funds": 1,  "Others": 0  },
-    "37s": { "Offshores": 39, "PFs": 13, "Banks": 27, "Insurance": 10, "Public Funds": 9,  "Others": 1  },
-    "39s": { "Offshores": 57, "PFs": 12, "Banks": 20, "Insurance": 7,  "Public Funds": 2,  "Others": 1  },
-    "40s": { "Offshores": 44, "PFs": 6,  "Banks": 16, "Insurance": 26, "Public Funds": 7,  "Others": 1  },
-    "42s": { "Offshores": 10, "PFs": 5,  "Banks": 14, "Insurance": 46, "Public Funds": 25, "Others": 0  },
-    "55s": { "Offshores": 7,  "PFs": 11, "Banks": 7,  "Insurance": 73, "Public Funds": 1,  "Others": 0  }
+    "28s": {
+      "Offshores": 7,
+      "PFs": 0,
+      "Banks": 0,
+      "Insurance": 0,
+      "Public Funds": 6,
+      "Others": 18
+    },
+    "32s": {
+      "Offshores": 51,
+      "PFs": 0,
+      "Banks": 0,
+      "Insurance": 0,
+      "Public Funds": 0,
+      "Others": 0
+    },
+    "39s": {
+      "Offshores": 50,
+      "PFs": 0,
+      "Banks": 0,
+      "Insurance": 0,
+      "Public Funds": 0,
+      "Others": 0
+    }
   },
   "evolucion_ownership": [
-    { "fecha": "Mar-23", "Offshores": 42.5, "PFs": 9.6,  "Banks": 33.3, "Insurance": 7.5, "Others": 7.1 },
-    { "fecha": "May-23", "Offshores": 42.8, "PFs": 9.5,  "Banks": 33.4, "Insurance": 7.6, "Others": 6.7 },
-    { "fecha": "Jul-23", "Offshores": 43.0, "PFs": 9.8,  "Banks": 33.2, "Insurance": 7.7, "Others": 6.3 },
-    { "fecha": "Sep-23", "Offshores": 43.5, "PFs": 9.9,  "Banks": 32.8, "Insurance": 7.8, "Others": 6.0 },
-    { "fecha": "Nov-23", "Offshores": 43.8, "PFs": 10.1, "Banks": 32.5, "Insurance": 7.8, "Others": 5.8 },
-    { "fecha": "Jan-24", "Offshores": 44.2, "PFs": 10.0, "Banks": 32.2, "Insurance": 7.7, "Others": 5.9 },
-    { "fecha": "Mar-24", "Offshores": 44.5, "PFs": 10.2, "Banks": 31.8, "Insurance": 7.8, "Others": 5.7 },
-    { "fecha": "May-24", "Offshores": 44.0, "PFs": 10.1, "Banks": 32.0, "Insurance": 7.9, "Others": 6.0 },
-    { "fecha": "Jul-24", "Offshores": 44.3, "PFs": 9.8,  "Banks": 32.5, "Insurance": 7.6, "Others": 5.8 },
-    { "fecha": "Sep-24", "Offshores": 44.2, "PFs": 9.2,  "Banks": 32.7, "Insurance": 7.8, "Others": 6.1 },
-    { "fecha": "Nov-24", "Offshores": 44.4, "PFs": 9.0,  "Banks": 33.1, "Insurance": 7.7, "Others": 5.8 },
-    { "fecha": "Jan-25", "Offshores": 44.2, "PFs": 8.9,  "Banks": 33.3, "Insurance": 7.5, "Others": 6.1 },
-    { "fecha": "Mar-25", "Offshores": 44.5, "PFs": 8.7,  "Banks": 33.0, "Insurance": 7.6, "Others": 6.2 },
-    { "fecha": "May-25", "Offshores": 44.7, "PFs": 8.8,  "Banks": 33.4, "Insurance": 7.3, "Others": 5.8 },
-    { "fecha": "Jul-25", "Offshores": 43.8, "PFs": 9.2,  "Banks": 31.8, "Insurance": 9.0, "Others": 6.2 },
-    { "fecha": "Sep-25", "Offshores": 44.2, "PFs": 10.5, "Banks": 31.3, "Insurance": 8.5, "Others": 5.5 },
-    { "fecha": "Nov-25", "Offshores": 44.6, "PFs": 9.2,  "Banks": 32.7, "Insurance": 7.5, "Others": 6.0 },
-    { "fecha": "Jan-26", "Offshores": 44.2, "PFs": 7.6,  "Banks": 34.5, "Insurance": 7.6, "Others": 6.1 },
-    { "fecha": "Mar-26", "Offshores": 45.3, "PFs": 8.4,  "Banks": 33.6, "Insurance": 7.4, "Others": 5.3 },
-    { "fecha": "Abr-26", "Offshores": 46.2, "PFs": 8.3,  "Banks": 32.7, "Insurance": 7.3, "Others": 5.5 }
+    {
+      "fecha": "May-25",
+      "Offshores": 10.13,
+      "PFs": 44.68,
+      "Banks": 31.2,
+      "Insurance": 0,
+      "Others": 0
+    },
+    {
+      "fecha": "Jun-25",
+      "Offshores": 10.33,
+      "PFs": 44.17,
+      "Banks": 31.33,
+      "Insurance": 0,
+      "Others": 0
+    },
+    {
+      "fecha": "Jul-25",
+      "Offshores": 9.98,
+      "PFs": 44.61,
+      "Banks": 31.07,
+      "Insurance": 0,
+      "Others": 0
+    },
+    {
+      "fecha": "Aug-25",
+      "Offshores": 10.54,
+      "PFs": 44.36,
+      "Banks": 32.66,
+      "Insurance": 0,
+      "Others": 0
+    },
+    {
+      "fecha": "Sep-25",
+      "Offshores": 10.51,
+      "PFs": 43.78,
+      "Banks": 34.63,
+      "Insurance": 0,
+      "Others": 0
+    },
+    {
+      "fecha": "Oct-25",
+      "Offshores": 9.22,
+      "PFs": 44.15,
+      "Banks": 34.48,
+      "Insurance": 0,
+      "Others": 0
+    },
+    {
+      "fecha": "Nov-25",
+      "Offshores": 7.88,
+      "PFs": 45.12,
+      "Banks": 33.13,
+      "Insurance": 0,
+      "Others": 0
+    },
+    {
+      "fecha": "Dec-25",
+      "Offshores": 7.63,
+      "PFs": 44.41,
+      "Banks": 33.01,
+      "Insurance": 0,
+      "Others": 0
+    },
+    {
+      "fecha": "Jan-26",
+      "Offshores": 7.95,
+      "PFs": 45.25,
+      "Banks": 32.14,
+      "Insurance": 0,
+      "Others": 0
+    },
+    {
+      "fecha": "Feb-26",
+      "Offshores": 8.26,
+      "PFs": 33.38,
+      "Banks": 9.06,
+      "Insurance": 0,
+      "Others": 0
+    },
+    {
+      "fecha": "Mar-26",
+      "Offshores": 8.16,
+      "PFs": 31.2,
+      "Banks": 0.06,
+      "Insurance": 0,
+      "Others": 0
+    },
+    {
+      "fecha": "Apr-26",
+      "Offshores": 3.7,
+      "PFs": 31.76,
+      "Banks": 9.26,
+      "Insurance": 0,
+      "Others": 0
+    }
   ],
   "dv01_mom": {
-    "nota": "Movimientos DV01 MoM en K DV01 (estimados — pendiente calibración con yields reales)",
-    "Offshores":  { "26s": 0,  "28s": -1, "29s": -8,  "31s": -6,  "32s": -33, "33s": -4,  "34s": 36,  "35s": 73,  "37s": 84,  "39s": 140, "40s": -28, "42s": 0,   "55s": 0  },
-    "PFs":        { "26s": 0,  "28s": 0,  "29s": 0,   "31s": -5,  "32s": 9,   "33s": 29,  "34s": 9,   "35s": -2,  "37s": -103,"39s": 82,  "40s": -21, "42s": 0,   "55s": 0  },
-    "Banks":      { "26s": 0,  "28s": 1,  "29s": -2,  "31s": 3,   "32s": 25,  "33s": -27, "34s": -35, "35s": -11, "37s": 51,  "39s": -199,"40s": 30,  "42s": 3,   "55s": 0  },
-    "Insurance":  { "26s": 0,  "28s": 0,  "29s": 0,   "31s": 1,   "32s": -2,  "33s": 0,   "34s": -6,  "35s": -2,  "37s": 1,   "39s": -5,  "40s": 18,  "42s": -3,  "55s": 0  }
+    "nota": "Pendiente calibración con yields reales"
   }
 };
 
