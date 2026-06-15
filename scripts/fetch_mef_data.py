@@ -140,146 +140,172 @@ def latest_stock_url():
 # 3. Parsear PDF de TENENCIAS
 # ─────────────────────────────────────────────────────────────────
 
+def _words_to_column_text(words, x_split):
+    """
+    Dado una lista de palabras con coordenadas pdfplumber,
+    separa en columna izquierda (x1 < x_split) y derecha (x1 >= x_split).
+    Dentro de cada columna reconstruye el texto ordenado por Y luego X.
+    Retorna (texto_izq, texto_der).
+    """
+    left  = [w for w in words if w["x1"] <= x_split]
+    right = [w for w in words if w["x1"] >  x_split]
+
+    def reconstruct(ws):
+        if not ws:
+            return ""
+        ws_sorted = sorted(ws, key=lambda w: (round(w["top"] / 5) * 5, w["x0"]))
+        lines = []
+        cur_y, cur_line = None, []
+        for w in ws_sorted:
+            y = round(w["top"] / 5) * 5
+            if cur_y is None or abs(y - cur_y) > 4:
+                if cur_line:
+                    lines.append(" ".join(cur_line))
+                cur_line = [w["text"]]
+                cur_y = y
+            else:
+                cur_line.append(w["text"])
+        if cur_line:
+            lines.append(" ".join(cur_line))
+        return "\n".join(lines)
+
+    return reconstruct(left), reconstruct(right)
+
+
+def _extract_pct_from_column(col_text):
+    """
+    Dado el texto de una columna de bono, extrae {key: pct} usando
+    los nombres del INVERSOR_MAP. Acepta "Nombre\nN.NN%" o "Nombre N.NN%".
+    """
+    inv_pct = {}
+    for nombre_mef, key in INVERSOR_MAP.items():
+        pat = INVERSOR_PATTERNS[nombre_mef] + r"[\s\n]+([\d.]+)%"
+        m = re.search(pat, col_text, re.I)
+        if m:
+            inv_pct[key] = float(m.group(1))
+    return inv_pct
+
+
 def parse_tenencias(pdf_bytes: bytes) -> dict:
     """
-    Extrae del PDF de tenencias del MEF:
-      - periodo, total_nominal_mn, tenencias_por_tipo
-      - pct_por_bono: { "12AGO2026": {"Offshores": 7.0, "Banks": 63.42, ...} }
-      - evolucion histórica
+    Extrae del PDF de tenencias del MEF usando coordenadas de palabras
+    para manejar el layout de 2 columnas por página.
     """
     import pdfplumber
 
-    with pdfplumber.open(io.BytesIO(pdf_bytes)) as pdf:
-        pages = [p.extract_text() or "" for p in pdf.pages]
-    text = "\n".join(pages)
-
     result = {}
+    pct_por_bono   = {}
+    tenencias_glob = {}
+    periodo_found  = False
+    total_units    = 0
 
-    # ── Período ──────────────────────────────────────────────────
-    m = re.search(
-        r"(enero|febrero|marzo|abril|mayo|junio|julio|agosto|"
-        r"septiembre|octubre|noviembre|diciembre)\s+de\s+(\d{4})",
-        text, re.I
-    )
-    if m:
-        mes_en = MESES_ES.get(m.group(1).lower(), m.group(1)[:3].capitalize())
-        result["periodo"] = f"{mes_en}-{m.group(2)}"
-        result["periodo_label"] = f"{m.group(1).capitalize()} {m.group(2)}"
-    else:
-        result["periodo"] = datetime.now().strftime("%b-%Y")
+    # Nombre de bono → regex para reconocerlo en el texto
+    bono_re = re.compile(r"(1[12][A-Z]+\d{4}E?)")
+
+    with pdfplumber.open(io.BytesIO(pdf_bytes)) as pdf:
+        full_text = "\n".join(p.extract_text() or "" for p in pdf.pages)
+
+        for page in pdf.pages:
+            page_text = page.extract_text() or ""
+            words     = page.extract_words(keep_blank_chars=False,
+                                           extra_attrs=["x0","x1","top","bottom"])
+
+            # ── Período ────────────────────────────────────────────
+            if not periodo_found:
+                m = re.search(
+                    r"(enero|febrero|marzo|abril|mayo|junio|julio|agosto|"
+                    r"septiembre|octubre|noviembre|diciembre)\s+de\s+(\d{4})",
+                    page_text, re.I
+                )
+                if m:
+                    mes_en = MESES_ES.get(m.group(1).lower(), m.group(1)[:3].capitalize())
+                    result["periodo"]       = f"{mes_en}-{m.group(2)}"
+                    result["periodo_label"] = f"{m.group(1).capitalize()} {m.group(2)}"
+                    periodo_found = True
+
+            # ── Total MN Nominal ───────────────────────────────────
+            if total_units == 0:
+                # Buscar "XXX XXX XXX Unidades" con número de 8-9 dígitos
+                for pat in [
+                    r"Nacional Nominal\s*\n?([\d][\d ]{7,11})\s*Unidades",
+                    r"(1[5-9]\d[\d ]{6,9})\s*Unidades",
+                ]:
+                    m2 = re.search(pat, page_text)
+                    if m2:
+                        raw = m2.group(1).replace(" ", "")
+                        if raw.isdigit() and len(raw) >= 8:
+                            total_units = int(raw)
+                            break
+
+            # ── % globales (página resumen, solo primera página con "MN Nominal") ──
+            if not tenencias_glob and "Moneda Nacional Nominal" in page_text:
+                # Ancho de página → columna izquierda es toda la página (layout circular/radial)
+                # Extraer todos los % de la página y mapear con los nombres
+                for nombre_mef, key in INVERSOR_MAP.items():
+                    pat = INVERSOR_PATTERNS[nombre_mef] + r"[\s\n ]+([\d.]+)%"
+                    m3 = re.search(pat, page_text, re.I)
+                    if m3:
+                        tenencias_glob[key] = float(m3.group(1))
+
+            # ── % por bono (páginas de detalle con 2 columnas) ────
+            # Detectar si hay nombres de bonos en esta página
+            bonos_en_pagina = bono_re.findall(page_text)
+            bonos_en_pagina = [b for b in bonos_en_pagina if b in BONOS_OBJETIVO]
+            if not bonos_en_pagina:
+                continue
+
+            # Ancho de página para dividir columnas
+            page_w = float(page.width)
+            mid_x  = page_w / 2
+
+            if len(bonos_en_pagina) == 1:
+                # Una sola columna (o bono único en página)
+                col_text = page_text
+                inv_pct  = _extract_pct_from_column(col_text)
+                if inv_pct:
+                    pct_por_bono[bonos_en_pagina[0]] = inv_pct
+            else:
+                # 2 columnas: dividir palabras por X
+                col_left, col_right = _words_to_column_text(words, mid_x)
+
+                # Averiguar qué bono va en cada columna buscando en cada texto
+                left_bonos  = [b for b in bonos_en_pagina if b in col_left]
+                right_bonos = [b for b in bonos_en_pagina if b in col_right]
+
+                # Si la separación no funciona, buscar el bono cuyo nombre
+                # aparece primero en el texto plano de cada columna
+                if not left_bonos and not right_bonos:
+                    left_bonos  = bonos_en_pagina[:1]
+                    right_bonos = bonos_en_pagina[1:]
+
+                for bono in left_bonos:
+                    inv_pct = _extract_pct_from_column(col_left)
+                    if inv_pct:
+                        pct_por_bono[bono] = inv_pct
+
+                for bono in right_bonos:
+                    inv_pct = _extract_pct_from_column(col_right)
+                    if inv_pct:
+                        pct_por_bono[bono] = inv_pct
+
+    # ── Fallbacks ─────────────────────────────────────────────────
+    if not periodo_found:
+        result["periodo"]       = datetime.now().strftime("%b-%Y")
         result["periodo_label"] = result["periodo"]
 
-    # ── Total MN Nominal ─────────────────────────────────────────
-    # El PDF tiene: "184 500 018 Unidades" en varias formas
-    # Buscar el número más grande de unidades (total general MN nominal)
-    # Aparece como "Bonos Soberanos en Moneda Nacional Nominal\nXXX XXX XXX Unidades"
-    for pat in [
-        r"Nacional Nominal\s*\n([\d\s]{5,})\s*Unidades",
-        r"Nacional Nominal\s+([\d\s]{5,})\s*Unidades",
-        r"(1[5-9]\d[\s\d]{5,10})\s*Unidades",   # 1xx,xxx,xxx formato
-        r"([\d][\d ]{8,12})\s*Unidades",
-    ]:
-        m = re.search(pat, text)
-        if m:
-            raw = m.group(1).replace(" ", "").replace("\n", "")
-            if raw.isdigit() and len(raw) >= 8:
-                units = int(raw)
-                result["total_nominal_mn"] = round(units / 1000)
-                break
+    result["total_nominal_mn"] = round(total_units / 1000) if total_units else 0
+    result["tenencias_por_tipo"] = tenencias_glob
+
+    if tenencias_glob:
+        print(f"  tenencias_por_tipo: {tenencias_glob}")
     else:
-        result["total_nominal_mn"] = 0
-
-    # ── % Globales por tipo de inversor (bloque resumen MN Nominal) ──
-    # El PDF página 1 tiene el resumen general. Buscamos el bloque
-    # entre "Moneda Nacional Nominal" y el siguiente "Moneda Nacional"
-    block_mn = re.search(
-        r"Moneda Nacional Nominal(.*?)(?:Moneda Nacional Indexada|Corto Plazo)",
-        text, re.S
-    )
-    block_text = block_mn.group(1) if block_mn else text[:3000]
-
-    tenencias = {}
-    for nombre_mef, key in INVERSOR_MAP.items():
-        pat = INVERSOR_PATTERNS[nombre_mef] + r"[\s\n]+([\d.]+)%"
-        m2 = re.search(pat, block_text, re.I)
-        if m2:
-            tenencias[key] = float(m2.group(1))
-    result["tenencias_por_tipo"] = tenencias
-    if tenencias:
-        print(f"  tenencias_por_tipo: { {k: v for k, v in tenencias.items()} }")
-    else:
-        print(f"  [WARN] tenencias_por_tipo vacío — block_text snippet: {repr(block_text[:200])}")
-
-    # ── % por inversor por bono ───────────────────────────────────
-    # Estrategia robusta: para cada bono, encontrar su posición en el texto,
-    # tomar los ~800 chars anteriores y buscar los % de cada inversor ahí.
-    # El PDF tiene el texto ANTES del nombre del bono.
-    # Ejemplo real:
-    #   "Bancos\n63.42%\nFondos públicos\n5.83%\nNo residentes\n7.00%\n
-    #    Otros\n17.69%\nPersonas \nnaturales\n0.15%\nSeguros\n5.91%\n
-    #    Bonos Soberanos 12AGO2026\n1 445 972 Unidades"
-
-    # Encontrar todas las posiciones de "Bonos Soberanos XXXXX" en el texto
-    # Usamos esto para delimitar el bloque de % de cada bono al segmento
-    # que va desde el fin del bono anterior hasta el inicio del bono actual.
-    all_bono_positions = [(m.start(), m.group(1))
-                         for m in re.finditer(r"Bonos Soberanos\s+(1\d[A-Z]+\d{4}E?)", text)]
-
-    pct_por_bono = {}
-
-    for bono in BONOS_OBJETIVO:
-        # Encontrar TODAS las ocurrencias del bono en el texto
-        positions = [m.start() for m in re.finditer(re.escape(bono), text)]
-        if not positions:
-            continue
-
-        best = {}
-        for pos in positions:
-            # Encontrar el "Bonos Soberanos" inmediatamente anterior a esta posición
-            # para delimitar el inicio del chunk (evitar contaminar con % del bono anterior)
-            prev_bono_end = 0
-            for bpos, bname in all_bono_positions:
-                if bpos < pos - 5:  # -5 para evitar matchear el bono actual
-                    prev_bono_end = bpos
-                else:
-                    break
-            # El chunk va desde después del bono anterior hasta esta posición
-            # pero máximo 1200 chars para no ir demasiado lejos
-            start = max(prev_bono_end, pos - 1200)
-            chunk = text[start:pos]
-
-            inv_pct = {}
-            for nombre_mef, key in INVERSOR_MAP.items():
-                pat = INVERSOR_PATTERNS[nombre_mef] + r"[\s\n]+([\d.]+)%"
-                # Buscar la ÚLTIMA ocurrencia en el chunk (la más cercana al bono)
-                matches = list(re.finditer(pat, chunk, re.I))
-                if matches:
-                    inv_pct[key] = float(matches[-1].group(1))
-
-            # Quedarse con el bloque que tenga más inversores parseados
-            if len(inv_pct) > len(best):
-                best = inv_pct
-
-        if best:
-            pct_por_bono[bono] = best
-            # Verificar que los % sumen ~100 (sanity check)
-            total_pct = sum(best.values())
-            if total_pct < 50 or total_pct > 115:
-                print(f"  [WARN] {bono}: suma de % = {total_pct:.1f}% (sospechoso)")
-        else:
-            if positions:
-                pos = positions[0]
-                start = max(0, pos - 400)
-                snippet = repr(text[start:pos + 50])
-                print(f"  [DEBUG] No se parsearon % para {bono}:")
-                print(f"    {snippet[:250]}")
+        print(f"  [WARN] tenencias_por_tipo vacío")
 
     result["pct_por_bono"] = pct_por_bono
     print(f"  Bonos parseados con %: {list(pct_por_bono.keys())}")
 
     # ── Evolución histórica ───────────────────────────────────────
-    evol = _parse_evolucion(text)
-    result["evolucion"] = evol
+    result["evolucion"] = _parse_evolucion(full_text)
 
     return result
 
