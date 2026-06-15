@@ -10,30 +10,15 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
-
-      - name: Set up Python 3.11
-        uses: actions/setup-python@v5
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-
-      - name: Install dependencies
-        run: pip install pdfplumber requests beautifulsoup4
-
-      - name: Run update script
-        run: python scripts/fetch_mef_data.py
-
-      - name: Commit and push if changed
-        run: |
+      - run: pip install pdfplumber requests beautifulsoup4
+      - run: python scripts/fetch_mef_data.py
+      - run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add data/ index.html
-          if git diff --staged --quiet; then
-            echo "Sin cambios."
-          else
-            git commit -m "data: actualiza tenencias automaticamente [skip ci]"
-            git push
-          fi
+          git diff --staged --quiet || git commit -m "data: actualiza tenencias [skip ci]" && git push
