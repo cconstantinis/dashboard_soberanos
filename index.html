@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Soberanos Bondholders Dashboard</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <style>
+    /* ── Reset & Base ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --red:     #C8102E;
+      --navy:    #002D62;
+      --gold:    #F5A623;
+      --teal:    #00A699;
+      --slate:   #4A5568;
+      --light:   #F7F8FA;
+      --border:  #E2E8F0;
+      --white:   #FFFFFF;
+
+      --c-offshore:  #002D62;
+      --c-pf:        #C8102E;
+      --c-banks:     #F5A623;
+      --c-insurance: #00A699;
+      --c-pubfunds:  #7C3AED;
+      --c-others:    #94A3B8;
+    }
+    html { font-size: 14px; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--light);
+      color: #1A202C;
+      min-height: 100vh;
+    }
+
+    /* ── Header ── */
+    .header {
+      background: var(--navy);
+      color: white;
+      padding: 18px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 3px solid var(--red);
+    }
+    .header-title { font-size: 1.25rem; font-weight: 700; letter-spacing: -.3px; }
+    .header-sub   { font-size: .8rem; opacity: .75; margin-top: 2px; }
+    .header-badge {
+      background: var(--red);
+      color: white;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: .8rem;
+      font-weight: 600;
+    }
+
+    /* ── Layout ── */
+    .container { max-width: 1400px; margin: 0 auto; padding: 24px 32px; }
+    .section-title {
+      font-size: .7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--slate);
+      margin: 28px 0 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .section-title::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    /* ── KPI Cards ── */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+    .kpi-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px;
+      position: relative;
+      overflow: hidden;
+    }
+    .kpi-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+    }
+    .kpi-card.offshore::before  { background: var(--c-offshore); }
+    .kpi-card.pf::before        { background: var(--c-pf); }
+    .kpi-card.banks::before     { background: var(--c-banks); }
+    .kpi-card.insurance::before { background: var(--c-insurance); }
+    .kpi-card.pubfunds::before  { background: var(--c-pubfunds); }
+    .kpi-card.others::before    { background: var(--c-others); }
+
+    .kpi-label { font-size: .72rem; color: var(--slate); font-weight: 600; margin-bottom: 6px; }
+    .kpi-value { font-size: 1.6rem; font-weight: 800; line-height: 1; }
+    .kpi-sub   { font-size: .72rem; color: var(--slate); margin-top: 4px; }
+    .kpi-delta { font-size: .75rem; font-weight: 600; margin-top: 4px; }
+    .kpi-delta.pos { color: #16A34A; }
+    .kpi-delta.neg { color: #DC2626; }
+
+    /* ── Charts Grid ── */
+    .charts-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    .charts-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+    .charts-4 {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+    }
+    @media (max-width: 1100px) {
+      .charts-2, .charts-3, .charts-4 { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 700px) {
+      .charts-2, .charts-3, .charts-4 { grid-template-columns: 1fr; }
+      .container { padding: 16px; }
+    }
+
+    .chart-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px;
+    }
+    .chart-card.full { grid-column: 1 / -1; }
+    .chart-title {
+      font-size: .78rem;
+      font-weight: 700;
+      color: var(--navy);
+      margin-bottom: 14px;
+      text-transform: uppercase;
+      letter-spacing: .3px;
+    }
+    .chart-wrap { position: relative; }
+    .chart-wrap.h200 { height: 200px; }
+    .chart-wrap.h260 { height: 260px; }
+    .chart-wrap.h300 { height: 300px; }
+    .chart-wrap.h340 { height: 340px; }
+
+    /* ── Table ── */
+    .table-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .table-header {
+      padding: 16px 20px 12px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .table-header h3 { font-size: .78rem; font-weight: 700; color: var(--navy); text-transform: uppercase; letter-spacing: .3px; }
+    .table-note { font-size: .68rem; color: var(--slate); font-style: italic; }
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: .78rem; }
+    thead th {
+      background: var(--navy);
+      color: white;
+      padding: 8px 10px;
+      text-align: right;
+      font-weight: 600;
+      font-size: .72rem;
+      white-space: nowrap;
+    }
+    thead th:first-child { text-align: left; }
+    tbody tr:nth-child(even) { background: var(--light); }
+    tbody tr:hover { background: #EBF4FF; }
+    tbody td {
+      padding: 7px 10px;
+      text-align: right;
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+    tbody td:first-child { text-align: left; font-weight: 600; color: var(--navy); }
+    tfoot td {
+      padding: 8px 10px;
+      text-align: right;
+      font-weight: 700;
+      background: #EBF4FF;
+      border-top: 2px solid var(--navy);
+    }
+    tfoot td:first-child { text-align: left; }
+
+    /* MoM table: color negative red, positive green */
+    .neg { color: #DC2626; }
+    .pos { color: #16A34A; }
+
+    /* ── Source Footer ── */
+    .footer {
+      margin-top: 32px;
+      padding: 16px 0;
+      border-top: 1px solid var(--border);
+      font-size: .72rem;
+      color: var(--slate);
+      text-align: center;
+    }
+
+    /* ── Loading ── */
+    #loading {
+      position: fixed; inset: 0;
+      background: var(--navy);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      z-index: 999;
+      transition: opacity .4s;
+    }
+    #loading.hidden { opacity: 0; pointer-events: none; }
+    .spinner {
+      width: 40px; height: 40px;
+      border: 3px solid rgba(255,255,255,.3);
+      border-top-color: var(--red);
+      border-radius: 50%;
+      animation: spin .8s linear infinite;
+      margin-bottom: 16px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Legend ── */
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 10px;
+    }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: .72rem;
+      color: var(--slate);
+    }
+    .legend-dot {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Loading overlay -->
+<div id="loading">
+  <div class="spinner"></div>
+  <div style="font-size:.85rem; opacity:.8;">Cargando datos...</div>
+</div>
+
+<!-- Header -->
+<div class="header">
+  <div>
+    <div class="header-title">Soberanos Bondholders Dashboard</div>
+    <div class="header-sub">Reporte de Tenencias de Bonos Soberanos del Perú — MEF</div>
+  </div>
+  <div style="display:flex;align-items:center;gap:12px;">
+    <div style="text-align:right;">
+      <div style="font-size:.72rem;opacity:.65;">Período</div>
+      <div id="periodo-badge" class="header-badge">—</div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- KPI Section -->
+  <div class="section-title">Holdings por tipo de inversor</div>
+  <div class="kpi-grid" id="kpi-grid"></div>
+
+  <!-- Ownership evolution + Pie -->
+  <div class="section-title">Estructura y evolución de tenencias</div>
+  <div class="charts-2">
+    <div class="chart-card">
+      <div class="chart-title">Evolución de Ownership (%)</div>
+      <div class="chart-wrap h300"><canvas id="chartEvolucion"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Holdings por tipo de cliente — Mar 2026</div>
+      <div class="chart-wrap h300"><canvas id="chartPie"></canvas></div>
+    </div>
+  </div>
+
+  <!-- Stacked bar: ownership per tenor -->
+  <div class="section-title">Estructura de tenencia por tenor</div>
+  <div class="chart-card">
+    <div class="chart-title">Peru Soberanos Ownership per Tenor (%)</div>
+    <div class="chart-wrap h300"><canvas id="chartOwnershipTenor"></canvas></div>
+  </div>
+
+  <!-- Outstanding table -->
+  <div class="section-title">Outstanding por bono e institución (MM PEN)</div>
+  <div class="table-card">
+    <div class="table-header">
+      <h3>Outstanding per Bond and Institutional Client</h3>
+      <div class="table-note">En millones de PEN (MM PEN)</div>
+    </div>
+    <div class="table-wrap">
+      <table id="tbl-outstanding">
+        <thead>
+          <tr>
+            <th>Bono</th>
+            <th>Offshores</th>
+            <th>Pension Funds</th>
+            <th>Banks</th>
+            <th>Insurance</th>
+            <th>Public Funds</th>
+            <th>Others</th>
+            <th>TOTAL</th>
+          </tr>
+        </thead>
+        <tbody id="tbl-outstanding-body"></tbody>
+        <tfoot id="tbl-outstanding-foot"></tfoot>
+      </table>
+    </div>
+  </div>
+
+  <!-- MoM Changes Table -->
+  <div class="section-title">Cambios de posición MoM (MM PEN)</div>
+  <div class="table-card">
+    <div class="table-header">
+      <h3>Change in Position MoM by Investor Type</h3>
+      <div class="table-note" id="mom-note"></div>
+    </div>
+    <div class="table-wrap">
+      <table id="tbl-mom">
+        <thead>
+          <tr id="tbl-mom-head"></tr>
+        </thead>
+        <tbody id="tbl-mom-body"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- DV01 MoM Charts -->
+  <div class="section-title">Movimientos DV01 MoM por tipo de inversor (K DV01)</div>
+  <div class="charts-4" id="dv01-charts"></div>
+
+  <!-- Footer -->
+  <div class="footer">
+    Fuente: <strong>Ministerio de Economía y Finanzas del Perú (MEF)</strong> —
+    Dirección General del Tesoro Público —
+    <a href="https://www.mef.gob.pe/contenidos/deuda_publ/mercado/reportes_tenencia.php"
+       target="_blank" style="color:var(--navy);">Reportes de Tenencia de Bonos Soberanos</a>
+  </div>
+
+</div>
+
+<script>
+// ──────────────────────────────────────────────
+// DATA — Se reemplaza por latest.json en producción
+// ──────────────────────────────────────────────
+const DATA_FILE = "./data/latest.json";
+
+// Colores por tipo de inversor
+const COLORS = {
+  "Offshores":     "#002D62",
+  "Pension Funds": "#C8102E",
+  "Banks":         "#F5A623",
+  "Insurance":     "#00A699",
+  "Public Funds":  "#7C3AED",
+  "Others":        "#94A3B8",
+};
+
+const TENORS = ["26s","28s","29s","31s","32s","33s","34s","35s","37s","39s","40s","42s","55s"];
+const INVERSOR_ORDER = ["Offshores","Pension Funds","Banks","Insurance","Public Funds","Others"];
+const INVERSOR_LABELS = {
+  "Offshores": "Offshores", "Pension Funds": "PFs",
+  "Banks": "Banks", "Insurance": "Insurance",
+  "Public Funds": "Pub. Funds", "Others": "Others"
+};
+
+// ──────────────────────────────────────────────
+// Helpers
+// ──────────────────────────────────────────────
+const fmt = (n) => n === 0 ? "—" : n.toLocaleString("es-PE");
+const fmtPct = (n) => n.toFixed(2) + "%";
+
+function colorNum(n, el) {
+  if (n > 0)  { el.classList.add("pos"); return "+" + fmt(n); }
+  if (n < 0)  { el.classList.add("neg"); return fmt(n); }
+  return "—";
+}
+
+// ──────────────────────────────────────────────
+// Render
+// ──────────────────────────────────────────────
+function renderKPIs(data) {
+  const classes = {
+    "Offshores": "offshore", "Pension Funds": "pf",
+    "Banks": "banks", "Insurance": "insurance",
+    "Public Funds": "pubfunds", "Others": "others"
+  };
+  const mom = data.cambios_mom?.por_inversor ?? {};
+  const grid = document.getElementById("kpi-grid");
+
+  // Total nominal
+  const totalCard = document.createElement("div");
+  totalCard.className = "kpi-card";
+  totalCard.style.borderTopColor = "#002D62";
+  totalCard.innerHTML = `
+    <div class="kpi-label">Total Outstanding</div>
+    <div class="kpi-value" style="font-size:1.3rem">${(data.meta?.total_nominal_mn ?? 0).toLocaleString("es-PE")}</div>
+    <div class="kpi-sub">MM PEN (MN Nominal)</div>`;
+  grid.appendChild(totalCard);
+
+  INVERSOR_ORDER.forEach(key => {
+    const pct = data.tenencias_por_tipo?.[key] ?? 0;
+    const momTotal = mom[key]?.["Total"] ?? null;
+    const card = document.createElement("div");
+    card.className = `kpi-card ${classes[key] ?? ""}`;
+
+    let deltaHtml = "";
+    if (momTotal !== null) {
+      const cls = momTotal > 0 ? "pos" : momTotal < 0 ? "neg" : "";
+      const sign = momTotal > 0 ? "+" : "";
+      deltaHtml = `<div class="kpi-delta ${cls}">${sign}${fmt(momTotal)} MM PEN MoM</div>`;
+    }
+
+    card.innerHTML = `
+      <div class="kpi-label">${key}</div>
+      <div class="kpi-value" style="color:${COLORS[key] ?? '#1A202C'}">${fmtPct(pct)}</div>
+      <div class="kpi-sub">del total MN Nominal</div>
+      ${deltaHtml}`;
+    grid.appendChild(card);
+  });
+}
+
+function renderEvolucion(data) {
+  const evol = data.evolucion_ownership ?? [];
+  const labels = evol.map(d => d.fecha);
+  const datasets = INVERSOR_ORDER.map(key => ({
+    label: key,
+    data: evol.map(d => d[key] ?? 0),
+    borderColor: COLORS[key],
+    backgroundColor: COLORS[key] + "20",
+    fill: false,
+    tension: 0.3,
+    borderWidth: 2,
+    pointRadius: 2,
+  }));
+
+  new Chart(document.getElementById("chartEvolucion"), {
+    type: "line",
+    data: { labels, datasets },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { position: "bottom", labels: { boxWidth: 10, font: { size: 11 } } } },
+      scales: {
+        y: { ticks: { callback: v => v + "%" }, grid: { color: "#F0F0F0" } },
+        x: { ticks: { maxRotation: 45, font: { size: 10 } } }
+      }
+    }
+  });
+}
+
+function renderPie(data) {
+  const tenencias = data.tenencias_por_tipo ?? {};
+  const keys = INVERSOR_ORDER.filter(k => tenencias[k] !== undefined);
+  new Chart(document.getElementById("chartPie"), {
+    type: "doughnut",
+    data: {
+      labels: keys,
+      datasets: [{
+        data: keys.map(k => tenencias[k]),
+        backgroundColor: keys.map(k => COLORS[k] ?? "#ccc"),
+        borderWidth: 2, borderColor: "#fff"
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      cutout: "55%",
+      plugins: {
+        legend: { position: "right", labels: { boxWidth: 12, font: { size: 11 },
+          generateLabels: (chart) => chart.data.labels.map((label, i) => ({
+            text: `${label}: ${chart.data.datasets[0].data[i].toFixed(2)}%`,
+            fillStyle: chart.data.datasets[0].backgroundColor[i],
+            strokeStyle: "#fff", lineWidth: 2, index: i
+          }))
+        }},
+        tooltip: { callbacks: { label: ctx => `${ctx.label}: ${ctx.parsed.toFixed(2)}%` } }
+      }
+    }
+  });
+}
+
+function renderOwnershipTenor(data) {
+  const opp = data.ownership_pct_por_tenor ?? {};
+  const labels = TENORS;
+  const datasets = INVERSOR_ORDER.map(key => ({
+    label: INVERSOR_LABELS[key] ?? key,
+    data: labels.map(t => opp[t]?.[key] ?? 0),
+    backgroundColor: COLORS[key],
+    borderWidth: 0,
+    stack: "stack",
+  }));
+
+  new Chart(document.getElementById("chartOwnershipTenor"), {
+    type: "bar",
+    data: { labels, datasets },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { position: "bottom", labels: { boxWidth: 12, font: { size: 11 } } } },
+      scales: {
+        x: { stacked: true },
+        y: { stacked: true, ticks: { callback: v => v + "%" }, max: 100 }
+      }
+    }
+  });
+}
+
+function renderOutstandingTable(data) {
+  const bonos = data.outstanding_por_bono ?? [];
+  const body = document.getElementById("tbl-outstanding-body");
+  const foot = document.getElementById("tbl-outstanding-foot");
+
+  let totals = { Offshores: 0, "Pension Funds": 0, Banks: 0, Insurance: 0, "Public Funds": 0, Others: 0, TOTAL: 0 };
+
+  bonos.forEach(b => {
+    const cols = ["Offshores","PFs","Banks","Insurance","Public Funds","Others","TOTAL"];
+    const keyMap = { "PFs": "Pension Funds" };
+    const tr = document.createElement("tr");
+    tr.innerHTML = `<td>${b.bono}</td>` + cols.map(c => {
+      const key = keyMap[c] ?? c;
+      const val = b[c === "PFs" ? "PFs" : c] ?? 0;
+      totals[key] = (totals[key] ?? 0) + val;
+      return `<td>${val > 0 ? val.toLocaleString("es-PE") : "—"}</td>`;
+    }).join("");
+    body.appendChild(tr);
+  });
+
+  const tr = document.createElement("tr");
+  tr.innerHTML = `<td>TOTAL</td>
+    <td>${totals["Offshores"].toLocaleString("es-PE")}</td>
+    <td>${totals["Pension Funds"].toLocaleString("es-PE")}</td>
+    <td>${totals["Banks"].toLocaleString("es-PE")}</td>
+    <td>${totals["Insurance"].toLocaleString("es-PE")}</td>
+    <td>${totals["Public Funds"].toLocaleString("es-PE")}</td>
+    <td>${totals["Others"].toLocaleString("es-PE")}</td>
+    <td>${totals["TOTAL"].toLocaleString("es-PE")}</td>`;
+  foot.appendChild(tr);
+}
+
+function renderMoMTable(data) {
+  const mom = data.cambios_mom ?? {};
+  const inversors = mom.por_inversor ?? {};
+  const investorKeys = Object.keys(inversors);
+  const tenors = TENORS;
+
+  document.getElementById("mom-note").textContent = mom.nota2 ?? "";
+
+  // Header
+  const headRow = document.getElementById("tbl-mom-head");
+  headRow.innerHTML = `<th>Inversor</th>` + tenors.map(t => `<th>${t}</th>`).join("") + `<th>Total ∆</th>`;
+
+  const body = document.getElementById("tbl-mom-body");
+  investorKeys.forEach(inv => {
+    const vals = inversors[inv] ?? {};
+    const tr = document.createElement("tr");
+    let cells = `<td style="font-weight:600">${inv}</td>`;
+    tenors.forEach(t => {
+      const n = vals[t] ?? 0;
+      const td = document.createElement("td");
+      td.textContent = colorNum(n, td);
+      cells += td.outerHTML;
+    });
+    const total = vals["Total"] ?? 0;
+    const tdTotal = document.createElement("td");
+    tdTotal.style.fontWeight = "700";
+    tdTotal.textContent = colorNum(total, tdTotal);
+    cells += tdTotal.outerHTML;
+    tr.innerHTML = cells;
+    body.appendChild(tr);
+  });
+}
+
+function renderDV01Charts(data) {
+  const dv01 = data.dv01_mom ?? {};
+  const container = document.getElementById("dv01-charts");
+  const investorKeys = Object.keys(dv01).filter(k => k !== "nota");
+  const tenors = TENORS;
+
+  investorKeys.forEach(inv => {
+    const vals = dv01[inv] ?? {};
+    const card = document.createElement("div");
+    card.className = "chart-card";
+    const canvasId = `dv01-${inv.replace(/\s/g, "_")}`;
+    card.innerHTML = `<div class="chart-title">${inv} MoM DV01 moves</div>
+      <div class="chart-wrap h260"><canvas id="${canvasId}"></canvas></div>`;
+    container.appendChild(card);
+
+    const values = tenors.map(t => vals[t] ?? 0);
+    const bgColors = values.map(v => v >= 0 ? COLORS[inv] + "CC" : "#DC2626CC");
+    const borderColors = values.map(v => v >= 0 ? COLORS[inv] : "#DC2626");
+
+    new Chart(document.getElementById(canvasId), {
+      type: "bar",
+      data: {
+        labels: tenors,
+        datasets: [{
+          data: values,
+          backgroundColor: bgColors,
+          borderColor: borderColors,
+          borderWidth: 1,
+        }]
+      },
+      options: {
+        indexAxis: "y",
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { grid: { color: "#F0F0F0" }, ticks: { font: { size: 10 } } },
+          y: { ticks: { font: { size: 10 } } }
+        }
+      }
+    });
+  });
+}
+
+// ──────────────────────────────────────────────
+// Init
+// ──────────────────────────────────────────────
+async function init() {
+  let data;
+
+  try {
+    const resp = await fetch(DATA_FILE);
+    if (!resp.ok) throw new Error("No se pudo cargar latest.json");
+    data = await resp.json();
+  } catch (e) {
+    // Fallback: intentar cargar el JSON de marzo 2026 directamente
+    try {
+      const resp2 = await fetch("./data/data_marzo_2026.json");
+      if (!resp2.ok) throw new Error("Tampoco se pudo cargar data_marzo_2026.json");
+      data = await resp2.json();
+    } catch (e2) {
+      document.getElementById("loading").innerHTML =
+        `<div style="color:#f87171;font-size:1rem;padding:32px;text-align:center;">
+          Error cargando datos.<br><small>${e2.message}</small>
+        </div>`;
+      return;
+    }
+  }
+
+  // Período
+  document.getElementById("periodo-badge").textContent = data.meta?.periodo ?? "—";
+  document.title = `Soberanos Dashboard — ${data.meta?.periodo ?? ""}`;
+
+  renderKPIs(data);
+  renderEvolucion(data);
+  renderPie(data);
+  renderOwnershipTenor(data);
+  renderOutstandingTable(data);
+  renderMoMTable(data);
+  renderDV01Charts(data);
+
+  // Hide loading
+  const loading = document.getElementById("loading");
+  loading.classList.add("hidden");
+  setTimeout(() => loading.remove(), 500);
+}
+
+init();
+</script>
+</body>
+</html>
