@@ -205,6 +205,10 @@ def parse_tenencias(pdf_bytes: bytes) -> dict:
         if m2:
             tenencias[key] = float(m2.group(1))
     result["tenencias_por_tipo"] = tenencias
+    if tenencias:
+        print(f"  tenencias_por_tipo: { {k: v for k, v in tenencias.items()} }")
+    else:
+        print(f"  [WARN] tenencias_por_tipo vacío — block_text snippet: {repr(block_text[:200])}")
 
     # ── % por inversor por bono ───────────────────────────────────
     # Estrategia robusta: para cada bono, encontrar su posición en el texto,
@@ -215,26 +219,42 @@ def parse_tenencias(pdf_bytes: bytes) -> dict:
     #    Otros\n17.69%\nPersonas \nnaturales\n0.15%\nSeguros\n5.91%\n
     #    Bonos Soberanos 12AGO2026\n1 445 972 Unidades"
 
+    # Encontrar todas las posiciones de "Bonos Soberanos XXXXX" en el texto
+    # Usamos esto para delimitar el bloque de % de cada bono al segmento
+    # que va desde el fin del bono anterior hasta el inicio del bono actual.
+    all_bono_positions = [(m.start(), m.group(1))
+                         for m in re.finditer(r"Bonos Soberanos\s+(1\d[A-Z]+\d{4}E?)", text)]
+
     pct_por_bono = {}
 
     for bono in BONOS_OBJETIVO:
-        # Encontrar TODAS las ocurrencias del bono (puede aparecer en varias páginas)
+        # Encontrar TODAS las ocurrencias del bono en el texto
         positions = [m.start() for m in re.finditer(re.escape(bono), text)]
         if not positions:
             continue
 
         best = {}
         for pos in positions:
-            # Tomar hasta 800 chars antes de la mención del bono
-            start = max(0, pos - 800)
+            # Encontrar el "Bonos Soberanos" inmediatamente anterior a esta posición
+            # para delimitar el inicio del chunk (evitar contaminar con % del bono anterior)
+            prev_bono_end = 0
+            for bpos, bname in all_bono_positions:
+                if bpos < pos - 5:  # -5 para evitar matchear el bono actual
+                    prev_bono_end = bpos
+                else:
+                    break
+            # El chunk va desde después del bono anterior hasta esta posición
+            # pero máximo 1200 chars para no ir demasiado lejos
+            start = max(prev_bono_end, pos - 1200)
             chunk = text[start:pos]
 
             inv_pct = {}
             for nombre_mef, key in INVERSOR_MAP.items():
                 pat = INVERSOR_PATTERNS[nombre_mef] + r"[\s\n]+([\d.]+)%"
-                found = re.search(pat, chunk, re.I)
-                if found:
-                    inv_pct[key] = float(found.group(1))
+                # Buscar la ÚLTIMA ocurrencia en el chunk (la más cercana al bono)
+                matches = list(re.finditer(pat, chunk, re.I))
+                if matches:
+                    inv_pct[key] = float(matches[-1].group(1))
 
             # Quedarse con el bloque que tenga más inversores parseados
             if len(inv_pct) > len(best):
@@ -242,14 +262,17 @@ def parse_tenencias(pdf_bytes: bytes) -> dict:
 
         if best:
             pct_por_bono[bono] = best
+            # Verificar que los % sumen ~100 (sanity check)
+            total_pct = sum(best.values())
+            if total_pct < 50 or total_pct > 115:
+                print(f"  [WARN] {bono}: suma de % = {total_pct:.1f}% (sospechoso)")
         else:
-            # Debug: imprimir texto alrededor del primer hallazgo para diagnóstico
             if positions:
                 pos = positions[0]
-                start = max(0, pos - 600)
+                start = max(0, pos - 400)
                 snippet = repr(text[start:pos + 50])
-                print(f"  [DEBUG] No se parsearon % para {bono}. Texto previo:")
-                print(f"    {snippet[:300]}")
+                print(f"  [DEBUG] No se parsearon % para {bono}:")
+                print(f"    {snippet[:250]}")
 
     result["pct_por_bono"] = pct_por_bono
     print(f"  Bonos parseados con %: {list(pct_por_bono.keys())}")
@@ -520,6 +543,18 @@ def build_json(tenencias: dict, stock: dict,
     outstanding_prev = anterior.get("outstanding_por_bono", outstanding)
     mom              = calcular_mom(outstanding, outstanding_prev)
     ownership_tenor  = build_ownership_pct(pct_por_bono)
+
+    # Si tenencias_por_tipo está vacío o incompleto, derivar del outstanding
+    t_tipo = tenencias.get("tenencias_por_tipo", {})
+    cols = ["Offshores", "Pension Funds", "Banks", "Insurance", "Public Funds", "Others"]
+    if not t_tipo or all(t_tipo.get(c, 0) == 0 for c in cols):
+        total_all = sum(r.get("TOTAL", 0) for r in outstanding) or 1
+        t_tipo = {}
+        for col in cols:
+            s = sum(r.get(col, 0) for r in outstanding)
+            t_tipo[col] = round(s / total_all * 100, 2)
+        print(f"  [INFO] tenencias_por_tipo derivado del outstanding: {t_tipo}")
+    tenencias["tenencias_por_tipo"] = t_tipo
 
     # Evolución: añadir nuevo punto a la serie anterior
     evol_prev = anterior.get("evolucion_ownership", [])
