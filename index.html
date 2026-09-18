@@ -112,7 +112,7 @@
     /* ── Charts Grid ── */
     .charts-2 {
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
       gap: 16px;
     }
     .charts-3 {
@@ -356,6 +356,11 @@
   <!-- DV01 MoM Charts -->
   <div class="section-title">Movimientos DV01 MoM por tipo de inversor (K PEN por pb)</div>
   <div class="charts-4" id="dv01-charts"></div>
+
+  <!-- Flujos históricos por inversor (pág. 2 del reporte) -->
+  <div class="section-title">Flujos por tipo de inversor — Nominal y DV01 (histórico)</div>
+  <div class="table-note" id="flujos-note" style="margin:-6px 0 10px"></div>
+  <div class="charts-2" id="flujos-charts"></div>
 
   <!-- Footer -->
   <div class="footer">
@@ -1212,7 +1217,123 @@ const EMBEDDED_DATA = {
       "bono_id": "12FEB2055",
       "fuente": "MEF diario 2026-07-31"
     }
-  }
+  },
+  "flujos_mensuales": [
+    {
+      "fecha": "Feb-26",
+      "Offshores": {
+        "nominal": 2470,
+        "dv01": 1897
+      },
+      "Pension Funds": {
+        "nominal": 709,
+        "dv01": 429
+      },
+      "Banks": {
+        "nominal": -2013,
+        "dv01": -1376
+      },
+      "Insurance": {
+        "nominal": 157,
+        "dv01": 123
+      }
+    },
+    {
+      "fecha": "Mar-26",
+      "Offshores": {
+        "nominal": -1006,
+        "dv01": -614
+      },
+      "Pension Funds": {
+        "nominal": 750,
+        "dv01": 541
+      },
+      "Banks": {
+        "nominal": 16,
+        "dv01": -133
+      },
+      "Insurance": {
+        "nominal": 469,
+        "dv01": 416
+      }
+    },
+    {
+      "fecha": "Apr-26",
+      "Offshores": {
+        "nominal": 2094,
+        "dv01": 1860
+      },
+      "Pension Funds": {
+        "nominal": -97,
+        "dv01": -89
+      },
+      "Banks": {
+        "nominal": -1260,
+        "dv01": -1067
+      },
+      "Insurance": {
+        "nominal": -4,
+        "dv01": 5
+      }
+    },
+    {
+      "fecha": "May-26",
+      "Offshores": {
+        "nominal": 1372,
+        "dv01": 1132
+      },
+      "Pension Funds": {
+        "nominal": 1812,
+        "dv01": 1307
+      },
+      "Banks": {
+        "nominal": -1600,
+        "dv01": -1217
+      },
+      "Insurance": {
+        "nominal": -187,
+        "dv01": -164
+      }
+    },
+    {
+      "fecha": "Jun-26",
+      "Offshores": {
+        "nominal": 1110,
+        "dv01": 1105
+      },
+      "Pension Funds": {
+        "nominal": 598,
+        "dv01": 347
+      },
+      "Banks": {
+        "nominal": -174,
+        "dv01": -155
+      },
+      "Insurance": {
+        "nominal": -488,
+        "dv01": -354
+      }
+    },
+    {
+      "fecha": "Jul-26",
+      "Offshores": {
+        "nominal": 1375,
+        "dv01": 886
+      },
+      "Pension Funds": {
+        "nominal": 27,
+        "dv01": -213
+      },
+      "Banks": {
+        "nominal": 5,
+        "dv01": 157
+      },
+      "Insurance": {
+        "nominal": -12,
+        "dv01": 4
+      }
+    }
+  ]
 };
 
 // Colores por tipo de inversor
@@ -1494,6 +1615,73 @@ function renderDV01Charts(data) {
   });
 }
 
+function renderFlujos(data) {
+  const serie = data.flujos_mensuales ?? [];
+  const cont = document.getElementById("flujos-charts");
+  if (!serie.length) { cont.innerHTML = '<div class="table-note">Sin historia de flujos todavía.</div>'; return; }
+  document.getElementById("flujos-note").textContent =
+    `Nominal en bn PEN (barras grises, eje izq.) · DV01 en K PEN por pb (rojo, eje der.) · ` +
+    `Evolución acumulada desde ${serie[0].fecha} · DV01 con precio sucio y duración modificada del reporte diario MEF de cada fin de mes`;
+  const labels = serie.map(p => p.fecha);
+  const GRIS = "#B8BEC6", ROJO = "#E4002B";
+  const invs = [["Offshores", "Offshore"], ["Pension Funds", "Pension Fund"], ["Banks", "Banks"]];
+  const ejes = (yTitle) => ({
+    x: { ticks: { maxRotation: 90, minRotation: 90, font: { size: 9 } }, grid: { display: false } },
+    y: { position: "left", title: { display: true, text: "bn PEN", font: { size: 10 } },
+         grid: { color: "#EEF0F3" }, ticks: { font: { size: 10 }, includeBounds: false } },
+    y2: { position: "right", title: { display: true, text: yTitle, font: { size: 10 } },
+          grid: { display: false }, ticks: { font: { size: 10 }, includeBounds: false, callback: v => v.toLocaleString("es-PE") } },
+  });
+  const tip = { callbacks: { label: c => `${c.dataset.label}: ${c.parsed.y.toLocaleString("es-PE", { maximumFractionDigits: 2 })}` } };
+  // Alinear el 0 de ambos ejes
+  const alinear = (a, b) => {
+    const pn = v => [Math.max(0, ...v), -Math.min(0, ...v)];
+    const [pa, na] = pn(a), [pb, nb] = pn(b);
+    const fr = (p, n) => (p + n) ? n / (p + n) : 0;
+    const r = Math.min(0.95, Math.max(fr(pa, na), fr(pb, nb)));
+    const rango = (p, n) => {
+      const span = Math.max(r > 0 ? n / r : 0, r < 1 ? p / (1 - r) : 0) * 1.1 || 1;
+      return { min: -r * span, max: (1 - r) * span };
+    };
+    return [rango(pa, na), rango(pb, nb)];
+  };
+  invs.forEach(([key, nombre]) => {
+    const nom = serie.map(p => (p[key]?.nominal ?? 0) / 1000);
+    const dv = serie.map(p => p[key]?.dv01 ?? 0);
+    let an = 0, ad = 0;
+    const nomAc = nom.map(v => (an += v)), dvAc = dv.map(v => (ad += v));
+    const id = key.replace(/\s/g, "_");
+    cont.insertAdjacentHTML("beforeend", `
+      <div class="chart-card"><div class="chart-title">${nombre} position change MoM — Nominal & DV01</div>
+        <div class="chart-wrap h300"><canvas id="fl-mom-${id}"></canvas></div></div>
+      <div class="chart-card"><div class="chart-title">${nombre} portfolio evolution — Nominal & DV01 acumulado</div>
+        <div class="chart-wrap h300"><canvas id="fl-acc-${id}"></canvas></div></div>`);
+    let [ya, yb] = alinear(nom, dv);
+    let sc = ejes("K PEN / pb"); Object.assign(sc.y, ya); Object.assign(sc.y2, yb);
+    new Chart(document.getElementById(`fl-mom-${id}`), {
+      data: { labels, datasets: [
+        { type: "bar", label: "Nominal (bn PEN)", data: nom, backgroundColor: GRIS, yAxisID: "y", order: 2,
+          grouped: false, barPercentage: 0.8 },
+        { type: "bar", label: "DV01 (K PEN/pb)", data: dv, backgroundColor: "rgba(0,0,0,0)", borderColor: ROJO,
+          borderWidth: 1.5, yAxisID: "y2", order: 1, grouped: false, barPercentage: 0.45 },
+      ] },
+      options: { responsive: true, maintainAspectRatio: false, interaction: { mode: "index", intersect: false },
+        plugins: { legend: { position: "bottom", labels: { boxWidth: 10, font: { size: 10 } } }, tooltip: tip }, scales: sc },
+    });
+    [ya, yb] = alinear(nomAc, dvAc);
+    sc = ejes("K PEN / pb"); Object.assign(sc.y, ya); Object.assign(sc.y2, yb);
+    new Chart(document.getElementById(`fl-acc-${id}`), {
+      data: { labels, datasets: [
+        { type: "line", label: "DV01 acumulado (K PEN/pb)", data: dvAc, borderColor: ROJO, backgroundColor: ROJO,
+          borderWidth: 2, pointRadius: 0, tension: 0.2, yAxisID: "y2", order: 1 },
+        { type: "bar", label: "Nominal acumulado (bn PEN)", data: nomAc, backgroundColor: GRIS, yAxisID: "y", order: 2 },
+      ] },
+      options: { responsive: true, maintainAspectRatio: false, interaction: { mode: "index", intersect: false },
+        plugins: { legend: { position: "bottom", labels: { boxWidth: 10, font: { size: 10 } } }, tooltip: tip }, scales: sc },
+    });
+  });
+}
+
 // ──────────────────────────────────────────────
 // Init
 // ──────────────────────────────────────────────
@@ -1519,6 +1707,7 @@ async function init() {
   renderOutstandingTable(data);
   renderMoMTable(data);
   renderDV01Charts(data);
+  renderFlujos(data);
 
   // Hide loading
   const loading = document.getElementById("loading");

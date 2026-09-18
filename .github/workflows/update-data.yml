@@ -10,6 +10,10 @@ on:
         description: "Re-procesar los N últimos reportes (0 = solo el último)"
         required: false
         default: "0"
+      desde:
+        description: "Re-procesar desde AAAA-MM (ej. 2023-03). Vacío = no usar"
+        required: false
+        default: ""
       force:
         description: "Forzar re-proceso aunque ya exista"
         type: boolean
@@ -17,6 +21,7 @@ on:
 jobs:
   update:
     runs-on: ubuntu-latest
+    timeout-minutes: 45
     permissions:
       contents: write
     steps:
@@ -29,7 +34,9 @@ jobs:
         run: |
           ARGS=""
           if [ "${{ github.event.inputs.backfill }}" != "" ] && [ "${{ github.event.inputs.backfill }}" != "0" ]; then ARGS="--backfill ${{ github.event.inputs.backfill }}"; fi
+          if [ "${{ github.event.inputs.desde }}" != "" ]; then ARGS="--desde ${{ github.event.inputs.desde }}"; fi
           if [ "${{ github.event.inputs.force }}" = "true" ]; then ARGS="$ARGS --force"; fi
+          echo "Argumentos: $ARGS"
           python scripts/fetch_mef_data.py $ARGS
       - name: Push changes
         run: |

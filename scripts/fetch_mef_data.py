@@ -39,6 +39,7 @@ import itertools
 import json
 import re
 import sys
+import time
 from datetime import date, datetime
 from pathlib import Path
 
@@ -74,6 +75,7 @@ DV01_CATS = ["Offshores", "Pension Funds", "Banks", "Insurance"]
 
 # Cupones (fijos por emisión; fuente: MEF, Stock de Bonos Soberanos)
 CUPONES = {
+    "12SEP2023": 5.20, "12AGO2024": 5.70,
     "12AGO2026": 8.20, "12AGO2028": 6.35, "12FEB2029": 6.00, "12FEB2029E": 5.94,
     "12AGO2031": 6.95, "12AGO2032": 6.15, "12AGO2033": 7.30, "12AGO2034": 5.40,
     "12AGO2035": 6.85, "12AGO2037": 6.90, "12AGO2039": 7.60, "12AGO2040": 5.35,
@@ -87,7 +89,11 @@ MES_ABR_EN = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oc
 MES_BONO = {"ENE": 1, "FEB": 2, "MAR": 3, "ABR": 4, "MAY": 5, "JUN": 6, "JUL": 7,
             "AGO": 8, "SET": 9, "SEP": 9, "OCT": 10, "NOV": 11, "DIC": 12}
 
-BONO_RE = re.compile(r"Bonos\s+Soberanos\s+(\d{2}[A-Z]{3}\d{4}E?)\b")
+BONO_RE = re.compile(r"(?:Bonos\s*)?Soberanos\s*(\d{2}[A-Z]{3})(\d{4}E?)?\b")
+# Bonos MN nominales conocidos (para completar títulos recortados como "Soberanos 12AGO")
+BONOS_CONOCIDOS = ["12SEP2023", "12AGO2024", "12AGO2026", "12AGO2028", "12FEB2029", "12FEB2029E",
+                   "12AGO2031", "12AGO2032", "12AGO2033", "12AGO2034", "12AGO2035", "12AGO2037",
+                   "12AGO2039", "12AGO2040", "12FEB2042", "12FEB2055"]
 PCT_RE = re.compile(r"^(\d{1,3}(?:[.,]\d+)?)\s*%$")
 UNITS_RE = re.compile(r"(\d{1,3}(?:[ ., ]\d{3})+|\d{4,})")
 
@@ -122,12 +128,12 @@ def _get(url: str):
     return r
 
 
-def listar_reportes() -> list[tuple[date, str]]:
-    """Lista (fecha_corte, url) de todos los PDFs de tenencias, ordenados por fecha."""
-    html = _get(TENENCIAS_URL).text
+ANIO_INICIO = 2023  # primer año que se descarga en un backfill completo
+
+
+def _links_tenencias(html: str) -> dict:
     out = {}
-    for href in re.findall(r'href="([^"]*tenencia_bono_(\d{6})\.pdf)"', html, re.I):
-        url, ddmmyy = href
+    for url, ddmmyy in re.findall(r'href="([^"]*tenencia_bono_?(\d{6})\.pdf)"', html, re.I):
         try:
             d = datetime.strptime(ddmmyy, "%d%m%y").date()
         except ValueError:
@@ -135,6 +141,20 @@ def listar_reportes() -> list[tuple[date, str]]:
         if not url.startswith("http"):
             url = MEF_BASE + ("" if url.startswith("/") else "/contenidos/deuda_publ/mercado/") + url
         out[d] = url
+    return out
+
+
+def listar_reportes(todos_los_anios: bool = False) -> list[tuple[date, str]]:
+    """Lista (fecha_corte, url) de los PDFs de tenencias, ordenados por fecha.
+    La página muestra un año a la vez (formulario POST 'nuevo_ano')."""
+    import requests
+    out = _links_tenencias(_get(TENENCIAS_URL).text)
+    if todos_los_anios:
+        for anio in range(ANIO_INICIO, date.today().year):
+            r = requests.post(TENENCIAS_URL, data={"nuevo_ano": anio, "x": 10, "y": 10},
+                              headers=HEADERS, timeout=90)
+            r.raise_for_status()
+            out.update(_links_tenencias(r.text))
     if not out:
         raise RuntimeError("No se encontraron PDFs de tenencias en " + TENENCIAS_URL)
     return sorted(out.items())
@@ -144,7 +164,7 @@ def listar_reportes() -> list[tuple[date, str]]:
 # 2. Extraer fragmentos de texto con coordenadas
 # ─────────────────────────────────────────────────────────────────
 TOKEN_RE = re.compile(
-    r"Bonos\s*Soberanos\s*\d{2}[A-Z]{3}\d{4}E?"      # título de torta
+    r"(?:Bonos\s*)?Soberanos\s*\d{2}[A-Z]{3}(?:\d{4}E?)?"  # título de torta (a veces recortado)
     r"|\d{1,3}(?:[.,]\d+)?\s*%"                         # porcentaje
     r"|\d[\d \u00a0]{2,}\d(?:\s*Unidades)?"          # unidades
     r"|no\s*residentes|afps|bancos|seguros|otros"
@@ -153,17 +173,56 @@ TOKEN_RE = re.compile(
     re.I)
 
 
+_VOCAB = ["bancos", "seguros", "otros", "afps", "fondos", "personas", "naturales",
+          "privados", "publicos", "no", "residentes"]
+
+
+def _separar_intercaladas(text, xs):
+    """Si 'text' es la mezcla letra a letra de dos etiquetas conocidas, devuelve
+    [(etiqueta, x0, x1), ...]; si no, None."""
+    t = _norm(text)
+    if not re.fullmatch(r"[a-z]+", t) or TOKEN_RE.fullmatch(text) or len(t) < 7:
+        return None
+    for w1 in _VOCAB:
+        for w2 in _VOCAB:
+            if len(w1) + len(w2) != len(t):
+                continue
+            # DP de intercalado con reconstrucción
+            n1, n2 = len(w1), len(w2)
+            ok = [[False] * (n2 + 1) for _ in range(n1 + 1)]
+            ok[0][0] = True
+            for i in range(n1 + 1):
+                for j in range(n2 + 1):
+                    if i and ok[i - 1][j] and w1[i - 1] == t[i + j - 1]:
+                        ok[i][j] = True
+                    if j and ok[i][j - 1] and w2[j - 1] == t[i + j - 1]:
+                        ok[i][j] = True
+            if not ok[n1][n2]:
+                continue
+            i, j, a1, a2 = n1, n2, [], []
+            while i or j:
+                if i and ok[i - 1][j] and w1[i - 1] == t[i + j - 1]:
+                    a1.append(i + j - 1); i -= 1
+                else:
+                    a2.append(i + j - 1); j -= 1
+            orig = {"publicos": "públicos"}
+            return [(orig.get(w, w).capitalize(), min(xs[p][0] for p in a), max(xs[p][1] for p in a))
+                    for w, a in ((w1, a1), (w2, a2))]
+    return None
+
+
 def _runs_de_pagina(page, pno):
     """Agrupa los caracteres en fragmentos (misma línea y contiguos) y luego los
     parte en tokens. Se hace a mano (no extract_words) porque Excel exporta algunas
     etiquetas con caracteres ligeramente rotados o pegadas a la vecina
     (ej. 'SegurosAFPs'), y extract_words las deja letra por letra o fusionadas."""
     chars = [c for c in page.chars if c["text"].strip() or c["text"] == " "]
-    chars.sort(key=lambda c: (round(c["top"]), c["x0"]))
+    # Algunos meses (2023) vienen con páginas en otra escala: normalizamos a A4 (595 pt)
+    esc = 595.0 / float(page.width or 595)
     lineas = []
     for c in sorted(chars, key=lambda c: c["top"]):
         for ln in lineas:
-            if abs(ln["top"] - c["top"]) <= 1.5:
+            if abs(ln["top"] - c["top"]) <= 1.5 / esc:
                 ln["chars"].append(c)
                 break
         else:
@@ -204,8 +263,14 @@ def _runs_de_pagina(page, pno):
                 t = text[i0:i1].strip()
                 if not t:
                     continue
-                runs.append({"page": pno, "x0": float(xs[i0][0]), "x1": float(xs[i1 - 1][1]),
-                             "top": float(top), "text": t})
+                # Etiquetas superpuestas con letras intercaladas (ej. 'BancFoosndos' = Bancos + Fondos)
+                sep = _separar_intercaladas(t, xs[i0 + text[i0:i1].index(t):])
+                if sep:
+                    for tt, x0, x1 in sep:
+                        runs.append({"page": pno, "x0": x0 * esc, "x1": x1 * esc, "top": float(top) * esc, "text": tt})
+                    continue
+                runs.append({"page": pno, "x0": float(xs[i0][0]) * esc, "x1": float(xs[i1 - 1][1]) * esc,
+                             "top": float(top) * esc, "text": t})
     return runs
 
 
@@ -253,11 +318,12 @@ def _etiquetas(runs_page):
             for j, s in enumerate(runs_page):
                 if j in usados or j == i:
                     continue
-                if (_norm(s["text"]) in tails and 0 < s["top"] - r["top"] <= 9
-                        and abs(_cx(s) - _cx(r)) <= 12):
+                debajo = 0 < s["top"] - r["top"] <= 9 and abs(_cx(s) - _cx(r)) <= 12
+                al_lado = abs(s["top"] - r["top"]) <= 2 and 0 <= s["x0"] - r["x1"] <= 25
+                if _norm(s["text"]) in tails and (debajo or al_lado):
                     key = n + " " + _norm(s["text"])
                     labels.append({**r, "x0": min(r["x0"], s["x0"]), "x1": max(r["x1"], s["x1"]),
-                                   "top": s["top"], "cat": LABELS[key], "key": key})
+                                   "top": max(s["top"], r["top"]), "cat": LABELS[key], "key": key})
                     usados.update({i, j})
                     break
     return labels
@@ -333,6 +399,18 @@ def parse_tenencias(pdf_bytes: bytes = None, runs: list = None) -> dict:
     bonos = {}
     seccion = "nominal"
     total_mn_nominal = None
+    completos = {m.group(1) + m.group(2) for r in runs for m in [BONO_RE.search(r["text"])]
+                 if m and m.group(2)}
+
+    def resolver_id(m):
+        if m.group(2):
+            return m.group(1) + m.group(2)
+        # Título recortado ("Soberanos 12AGO"): el bono conocido con ese día/mes que no
+        # aparece completo en el PDF y que no había vencido a la fecha del reporte.
+        cands = [b for b in BONOS_CONOCIDOS if b.startswith(m.group(1)) and b not in completos
+                 and bono_fecha(b) > date(anio, mes, 1)]
+        return cands[0] if cands else m.group(1) + "????"
+
     for pno in sorted({r["page"] for r in runs}):
         rp = [r for r in runs if r["page"] == pno]
         ptxt = _norm(" ".join(r["text"] for r in rp))
@@ -356,7 +434,8 @@ def parse_tenencias(pdf_bytes: bytes = None, runs: list = None) -> dict:
             m = BONO_RE.search(r["text"])
             if not m:
                 continue
-            bid = m.group(1)
+            bid = resolver_id(m)
+            completos.add(bid)
             units = None
             below = [s for s in rp if 0 < s["top"] - r["top"] <= 12 and UNITS_RE.search(s["text"])
                      and not BONO_RE.search(s["text"])]
@@ -397,7 +476,7 @@ def validar(parsed: dict) -> list[str]:
             errs.append(f"{bid}: los % suman {b['suma']} (esperado ~100): {b['detalle']}")
     tot = parsed.get("total_mn_nominal_unidades")
     s = sum((b["unidades"] or 0) for b in nominales.values())
-    if tot and abs(s - tot) / tot > 0.001:
+    if tot and abs(s - tot) / tot > 0.002:
         errs.append(f"Suma de unidades por bono ({s:,}) ≠ total MN nominal del PDF ({tot:,})")
     return errs
 
@@ -445,7 +524,9 @@ def parse_daily(pdf_bytes: bytes) -> dict:
     import pdfplumber
 
     with pdfplumber.open(io.BytesIO(pdf_bytes)) as pdf:
-        words = pdf.pages[0].extract_words(x_tolerance=1.5, y_tolerance=2)
+        pg = pdf.pages[0]
+        words = pg.extract_words(x_tolerance=1.5, y_tolerance=2)
+        esc = float(pg.width or 842) / 842.0  # algunos meses vienen en otra escala
 
     def hx(texto, n=0):
         xs = sorted(w["x0"] for w in words if w["text"].lower().startswith(texto.lower()))
@@ -462,18 +543,30 @@ def parse_daily(pdf_bytes: bytes) -> dict:
     if any(v is None for v in cols.values()):
         raise RuntimeError(f"Reporte diario: no se encontraron los encabezados {cols}")
 
+    # Intereses corridos: desde 2024 en % del nominal; en 2023 en S/ por bono de S/ 1,000
+    hacc = min((w for w in words if w["text"].lower().startswith("accrued")), key=lambda w: w["top"])
+    cerca = " ".join(w["text"] for w in words
+                     if abs(w["x0"] - hacc["x0"]) < 30 * esc and abs(w["top"] - hacc["top"]) < 30 * esc)
+    acc_en_soles = ("S/" in cerca or "PEN" in cerca) and "%" not in cerca
+
     out = {}
     for a in words:
         m = DAILY_RE.match(a["text"])
         if not m:
             continue
         bid = f"{m.group(1)}{m.group(2)}20{m.group(3)}{m.group(4)}"
-        fila = [w for w in words if abs(w["top"] - a["top"]) <= 5 and w is not a]
+        fila = [w for w in words if abs(w["top"] - a["top"]) <= 5 * esc and w is not a]
         rec = {}
         for k, x in cols.items():
-            cands = [(abs(w["x0"] - x), _num(w["text"])) for w in fila if abs(w["x0"] - x) <= 15]
+            cands = [(abs(w["x0"] - x), _num(w["text"])) for w in fila if abs(w["x0"] - x) <= 15 * esc]
             cands = [c for c in cands if c[1] is not None]
             rec[k] = min(cands)[1] if cands else None
+        if acc_en_soles and rec.get("interes_corrido") is not None:
+            rec["interes_corrido"] = round(rec["interes_corrido"] / 10, 4)
+        # Sanidad: el cupón corrido no puede superar el cupón anual (celda mal leída → se ignora)
+        cup = rec.get("cupon") or CUPONES.get(bid)
+        if cup and rec.get("interes_corrido") is not None and rec["interes_corrido"] > cup:
+            rec["interes_corrido"] = None
         out[bid] = rec
     return out
 
@@ -689,6 +782,45 @@ def construir_evolucion(actual: dict) -> list:
     return serie
 
 
+FLUJO_CATS = {"Offshores": "Offshores", "Pension Funds": "PFs", "Banks": "Banks", "Insurance": "Insurance"}
+
+
+def _resumen_flujo(d: dict) -> dict | None:
+    """Cambio MoM total (MM PEN nominal) y DV01 total (K PEN/pb) por tipo de inversor."""
+    mom = d.get("cambios_mom", {}).get("por_inversor", {})
+    per, prev = d["meta"]["periodo"], d["meta"].get("periodo_anterior")
+    anio, mes = int(per[-4:]), MES_ABR_EN.index(per[:3]) + 1
+    if not mom or prev != periodo_previo(anio, mes):
+        return None  # sin mes anterior consecutivo no hay flujo comparable
+    p = {"fecha": f"{MES_ABR_EN[mes - 1]}-{str(anio)[2:]}", "_orden": anio * 100 + mes}
+    for cat, lab in FLUJO_CATS.items():
+        dv = d.get("dv01_mom", {}).get(cat, {})
+        p[cat] = {"nominal": mom.get(lab, {}).get("Total", 0),
+                  "dv01": sum(v for v in dv.values() if isinstance(v, (int, float)))}
+    return p
+
+
+def construir_flujos(actual: dict) -> list:
+    """Serie mensual de flujos por inversor (página 2 del reporte): un punto por data_*.json."""
+    puntos = {}
+    for f in sorted(DATA_DIR.glob("data_*.json")):
+        try:
+            d = json.loads(f.read_text(encoding="utf-8"))
+            if d.get("meta", {}).get("parser", "").startswith("v3"):
+                p = _resumen_flujo(d)
+                if p:
+                    puntos[p["_orden"]] = p
+        except Exception:
+            pass
+    p = _resumen_flujo(actual)
+    if p:
+        puntos[p["_orden"]] = p
+    serie = [puntos[k] for k in sorted(puntos)]
+    for x in serie:
+        x.pop("_orden", None)
+    return serie
+
+
 # ─────────────────────────────────────────────────────────────────
 # 6. Guardar
 # ─────────────────────────────────────────────────────────────────
@@ -761,6 +893,7 @@ def procesar(pdf_bytes: bytes, url: str, es_ultimo: bool, anterior: dict | None 
         print(f"  [WARN] Reporte diario no disponible ({e}) → DV01 con duración estimada")
     data = construir(parsed, anterior, url, daily)
     data["evolucion_ownership"] = construir_evolucion(data)
+    data["flujos_mensuales"] = construir_flujos(data)
     guardar(data, es_ultimo)
     return data
 
@@ -769,6 +902,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--force", action="store_true", help="re-procesar aunque el período ya exista")
     ap.add_argument("--backfill", type=int, default=0, help="re-procesar los N últimos reportes en orden")
+    ap.add_argument("--desde", help="re-procesar desde AAAA-MM hasta el último (ej. 2023-03)")
     ap.add_argument("--pdf", help="usar un PDF local en vez de descargar")
     args = ap.parse_args()
 
@@ -780,13 +914,20 @@ def main():
         procesar(Path(args.pdf).read_bytes(), args.pdf, es_ultimo=True)
         return
 
-    reportes = listar_reportes()
+    historico = bool(args.desde) or args.backfill > 6
+    reportes = listar_reportes(todos_los_anios=historico)
     print(f"  {len(reportes)} reportes en el MEF; último: {reportes[-1][1]}")
 
-    if args.backfill:
-        sel = reportes[-args.backfill:]
+    if args.backfill or args.desde:
+        if args.desde:
+            y, m = map(int, args.desde.split("-"))
+            sel = [(d, u) for d, u in reportes if (d.year, d.month) >= (y, m)]
+        else:
+            sel = reportes[-args.backfill:]
         anterior = None
         for i, (d, url) in enumerate(sel):
+            if i:
+                time.sleep(1.5)  # no saturar al servidor del MEF
             print(f"\n→ {url}")
             anterior = procesar(_get(url).content, url, es_ultimo=(i == len(sel) - 1),
                                 anterior=anterior)

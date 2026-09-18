@@ -14,6 +14,7 @@ Dashboard interactivo de tenencias de Bonos Soberanos del Perú, con datos del *
 - **Outstanding por bono e institución** — tabla completa en MM PEN
 - **Cambios MoM** — tabla de variaciones mensuales por inversor y tenor
 - **Movimientos DV01 MoM** — horizontal bar charts por tipo de inversor
+- **Flujos históricos (pág. 2 del reporte)** — Offshores, AFPs y Bancos: cambio MoM nominal + DV01 y evolución acumulada desde Abr-23
 
 ## Datos
 
@@ -31,7 +32,8 @@ El archivo `data/latest.json` es el que usa el dashboard. Se actualiza automáti
 4. Recalcula outstanding (MM PEN), MoM vs el mes anterior, DV01 y la serie de evolución
 5. Hace commit de `data/` e `index.html`
 
-Desde la pestaña **Actions → Run workflow** se puede re-procesar con `backfill = N`.
+Desde la pestaña **Actions → Run workflow** se puede re-procesar con `backfill = N` o con
+`desde = 2023-03` (reconstruye toda la historia mensual que usan los gráficos de flujos).
 
 ## Actualización manual
 
