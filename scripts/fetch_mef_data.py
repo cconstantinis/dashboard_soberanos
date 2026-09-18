@@ -403,7 +403,83 @@ def validar(parsed: dict) -> list[str]:
 
 
 # ─────────────────────────────────────────────────────────────────
-# 4. Duración modificada (para DV01)
+# 4. Reporte diario MEF (precio, yield y duración de fin de mes)
+# ─────────────────────────────────────────────────────────────────
+DAILY_RE = re.compile(r"^SB(\d{2})([A-Z]{3})(\d{2})(E?)$")
+
+
+def url_daily(d: date) -> str:
+    return f"{MEF_BASE}/contenidos/english/report/{d.year}/Daily_{d:%m_%d_%y}.pdf"
+
+
+def buscar_daily_fin_de_mes(anio: int, mes: int, max_dias: int = 12):
+    """Último 'Daily report' publicado del mes: prueba desde el último día hacia atrás."""
+    import requests
+    d = _add_months(date(anio, mes, 1), 1)
+    for _ in range(max_dias):
+        d = date.fromordinal(d.toordinal() - 1)
+        if d.month != mes:
+            break
+        if d.weekday() >= 5:
+            continue
+        url = url_daily(d)
+        try:
+            r = requests.get(url, headers=HEADERS, timeout=60)
+        except requests.RequestException:
+            continue
+        if r.status_code == 200 and r.content[:4] == b"%PDF":
+            return d, url, r.content
+    return None
+
+
+def _num(t: str):
+    t = t.strip().replace("\u00a0", "").replace(" ", "")
+    if not re.fullmatch(r"-?\d+(?:[.,]\d+)?", t):
+        return None
+    return float(t.replace(",", "."))
+
+
+def parse_daily(pdf_bytes: bytes) -> dict:
+    """Tabla 'Bonos soberanos' del reporte diario → {bono_id: {cupon, precio, yield, ...}}.
+    Las columnas se ubican por la posición X de sus encabezados."""
+    import pdfplumber
+
+    with pdfplumber.open(io.BytesIO(pdf_bytes)) as pdf:
+        words = pdf.pages[0].extract_words(x_tolerance=1.5, y_tolerance=2)
+
+    def hx(texto, n=0):
+        xs = sorted(w["x0"] for w in words if w["text"].lower().startswith(texto.lower()))
+        return xs[n] if len(xs) > n else None
+
+    cols = {
+        "interes_corrido": hx("Accrued"),
+        "cupon": hx("Coupon"),
+        "precio": hx("Weighted", 0),
+        "yield": hx("Weighted", 1),
+        "duracion": hx("Duration"),
+        "dmod": hx("Modificada"),
+    }
+    if any(v is None for v in cols.values()):
+        raise RuntimeError(f"Reporte diario: no se encontraron los encabezados {cols}")
+
+    out = {}
+    for a in words:
+        m = DAILY_RE.match(a["text"])
+        if not m:
+            continue
+        bid = f"{m.group(1)}{m.group(2)}20{m.group(3)}{m.group(4)}"
+        fila = [w for w in words if abs(w["top"] - a["top"]) <= 5 and w is not a]
+        rec = {}
+        for k, x in cols.items():
+            cands = [(abs(w["x0"] - x), _num(w["text"])) for w in fila if abs(w["x0"] - x) <= 15]
+            cands = [c for c in cands if c[1] is not None]
+            rec[k] = min(cands)[1] if cands else None
+        out[bid] = rec
+    return out
+
+
+# ─────────────────────────────────────────────────────────────────
+# 5. Duración modificada (fallback si no hay reporte diario)
 # ─────────────────────────────────────────────────────────────────
 def _add_months(d: date, n: int) -> date:
     y, m = divmod(d.month - 1 + n, 12)
@@ -434,13 +510,13 @@ def duracion_modificada(bono_id: str, cupon: float, ytm: float, settle: date) ->
 
 
 # ─────────────────────────────────────────────────────────────────
-# 5. Construir el JSON del dashboard
+# 6. Construir el JSON del dashboard
 # ─────────────────────────────────────────────────────────────────
 def periodo_key(anio, mes):
     return f"{MES_ABR_EN[mes - 1]}-{anio}"
 
 
-def construir(parsed: dict, anterior: dict | None, url: str) -> dict:
+def construir(parsed: dict, anterior: dict | None, url: str, daily: dict | None = None) -> dict:
     anio, mes = parsed["anio"], parsed["mes"]
     nominales = {k: v for k, v in parsed["bonos"].items() if v["seccion"] == "nominal"}
 
@@ -490,6 +566,25 @@ def construir(parsed: dict, anterior: dict | None, url: str) -> dict:
     mom_label = {"Offshores": "Offshores", "Pension Funds": "PFs", "Banks": "Banks",
                  "Insurance": "Insurance", "Public Funds": "Public Funds", "Others": "Others"}
     act_rows = {r["bono"]: r for r in outstanding}
+
+    # Analítica por bono (reporte diario MEF de fin de mes). Para SOB29 se usa el
+    # 12FEB2029E (el 12FEB2029 original es residual y no figura en el diario).
+    analitica = {}
+    an_daily = (daily or {}).get("bonos", {})
+    for sob, row in act_rows.items():
+        ids = sorted(row["vencimiento"].split(" / "),
+                     key=lambda b: -(nominales.get(b, {}).get("unidades") or 0))
+        rec = next((dict(an_daily[b], bono_id=b) for b in ids if b in an_daily
+                    and an_daily[b].get("dmod") is not None and an_daily[b].get("precio")), None)
+        if rec:
+            rec["fuente"] = "MEF diario " + daily["fecha"]
+        else:
+            bid = ids[0]
+            cup = CUPONES.get(bid, 6.5)
+            ytm = float(yields.get(sob, yields.get(bid, cup)))
+            rec = {"bono_id": bid, "cupon": cup, "yield": ytm, "precio": 100.0, "interes_corrido": 0.0,
+                   "dmod": round(duracion_modificada(bid, cup, ytm, settle), 2), "fuente": "estimado (yield = cupón)"}
+        analitica[row["tenor"]] = rec
     for k in CATS:
         fila, filad = {}, {}
         for sob in dict.fromkeys(list(prev_rows) + list(act_rows)):
@@ -498,17 +593,18 @@ def construir(parsed: dict, anterior: dict | None, url: str) -> dict:
             ten = (act_rows.get(sob) or prev_rows.get(sob)).get("tenor") or ("" + sob[3:] + "s")
             fila[ten] = a - p
             if k in DV01_CATS and sob in act_rows:
-                bid = act_rows[sob]["vencimiento"].split(" / ")[-1]
-                cup = CUPONES.get(bid, 6.5)
-                ytm = float(yields.get(sob, yields.get(bid, cup)))
-                md = duracion_modificada(bid, cup, ytm, settle)
-                filad[ten] = round((a - p) * md * 0.1)  # K PEN por pb
+                an = analitica[ten]
+                sucio = (an["precio"] + (an.get("interes_corrido") or 0)) / 100
+                filad[ten] = round((a - p) * sucio * an["dmod"] * 0.1)  # K PEN por pb
         fila["Total"] = sum(v for t, v in fila.items())
         por_inv[mom_label[k]] = fila
         if k in DV01_CATS:
             dv01[k] = filad
-    fuente_y = "yields de data/yields.json" if yields else "yield = cupón (aprox. a la par)"
-    dv01["nota"] = f"K PEN por pb = ΔMM PEN × duración modificada × 0.1 ({fuente_y})"
+    if daily:
+        fuente_y = f"precio sucio y duración modificada del reporte diario MEF del {daily['fecha']}"
+    else:
+        fuente_y = "sin reporte diario: duración estimada con yield = cupón, a la par"
+    dv01["nota"] = f"K PEN por pb = ΔMM nominal × precio sucio/100 × duración modificada × 0.1 ({fuente_y})"
 
     mom_nota = f"Cambios en MM PEN MoM ({periodo_key(anio, mes)} vs {prev_per or 's/d'})"
     if not anterior:
@@ -523,6 +619,8 @@ def construir(parsed: dict, anterior: dict | None, url: str) -> dict:
             "fuente": "Ministerio de Economía y Finanzas del Perú (MEF)",
             "url_tenencias": url,
             "total_nominal_mn": total_units,
+            "url_daily": (daily or {}).get("url"),
+            "fecha_daily": (daily or {}).get("fecha"),
             "parser": "v3-coordenadas",
         },
         "tenores": tenores,
@@ -537,6 +635,7 @@ def construir(parsed: dict, anterior: dict | None, url: str) -> dict:
         "ownership_pct_por_tenor": own_pct,
         "evolucion_ownership": [],  # se completa en construir_evolucion()
         "dv01_mom": dv01,
+        "analitica_bonos": analitica,
         "detalle_pdf": {bid: {"unidades": b["unidades"], "pct": b["detalle"], "suma": b["suma"]}
                         for bid, b in parsed["bonos"].items()},
     }
@@ -649,7 +748,18 @@ def procesar(pdf_bytes: bytes, url: str, es_ultimo: bool, anterior: dict | None 
         anterior = cargar_periodo(periodo_previo(parsed["anio"], parsed["mes"]))
     if anterior is None:
         print("  [WARN] No hay datos v3 del mes anterior → MoM/DV01 vacíos")
-    data = construir(parsed, anterior, url)
+    daily = None
+    try:
+        enc = buscar_daily_fin_de_mes(parsed["anio"], parsed["mes"])
+        if enc:
+            d_fecha, d_url, d_bytes = enc
+            daily = {"fecha": d_fecha.isoformat(), "url": d_url, "bonos": parse_daily(d_bytes)}
+            print(f"  Reporte diario {d_fecha}: {len(daily['bonos'])} bonos con precio/duración")
+        else:
+            print("  [WARN] No se encontró reporte diario de fin de mes → DV01 con duración estimada")
+    except Exception as e:  # el DV01 no debe tumbar la actualización de tenencias
+        print(f"  [WARN] Reporte diario no disponible ({e}) → DV01 con duración estimada")
+    data = construir(parsed, anterior, url, daily)
     data["evolucion_ownership"] = construir_evolucion(data)
     guardar(data, es_ultimo)
     return data

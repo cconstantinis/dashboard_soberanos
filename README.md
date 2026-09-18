@@ -45,8 +45,10 @@ python scripts/fetch_mef_data.py --pdf tenencia_bono_310726.pdf   # PDF local
 Notas de datos:
 - Las unidades por bono salen del mismo PDF de tenencias (ya no se usa el PDF de stock).
 - `Others` = Otros + Fondos privados + Personas naturales. SOB29 = 12FEB2029 + 12FEB2029E.
-- DV01 (K PEN por pb) = ΔMM PEN × duración modificada × 0.1. Por defecto yield = cupón;
-  se puede poner yields reales en `data/yields.json`, ej. `{"SOB35": 6.45, "SOB40": 6.90}`.
+- DV01 (K PEN por pb) = ΔMM nominal × precio sucio/100 × duración modificada × 0.1.
+  Precio, intereses corridos, yield y duración modificada salen del **Reporte Diario del MEF**
+  del último día hábil publicado del mes (`/contenidos/english/report/AAAA/Daily_MM_DD_AA.pdf`).
+  Si no se encuentra, se usa una duración estimada con yield = cupón (o `data/yields.json`).
 - `data/historico_evolucion.json` guarda la serie manual previa a 2026 (Mar-23 → Nov-25).
 
 ## Publicar en GitHub Pages
