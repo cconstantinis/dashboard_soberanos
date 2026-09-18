@@ -3,10 +3,12 @@
     "periodo": "Apr-2026",
     "periodo_label": "Abril 2026",
     "periodo_anterior": "Mar-2026",
-    "fecha_reporte": "2026-09-17",
+    "fecha_reporte": "2026-09-18",
     "fuente": "Ministerio de Economía y Finanzas del Perú (MEF)",
     "url_tenencias": "https://www.mef.gob.pe/contenidos/deuda_publ/mercado/tenencia_bono_300426.pdf",
     "total_nominal_mn": 184498,
+    "url_daily": "https://www.mef.gob.pe/contenidos/english/report/2026/Daily_04_30_26.pdf",
+    "fecha_daily": "2026-04-30",
     "parser": "v3-coordenadas"
   },
   "tenores": [
@@ -613,22 +615,49 @@
       "Banks": 32.73,
       "Insurance": 7.33,
       "Others": 5.46
+    },
+    {
+      "fecha": "May-26",
+      "Offshores": 46.59,
+      "Pension Funds": 9.23,
+      "PFs": 9.23,
+      "Banks": 31.64,
+      "Insurance": 7.18,
+      "Others": 5.35
+    },
+    {
+      "fecha": "Jun-26",
+      "Offshores": 46.84,
+      "Pension Funds": 9.49,
+      "PFs": 9.49,
+      "Banks": 31.32,
+      "Insurance": 6.87,
+      "Others": 5.49
+    },
+    {
+      "fecha": "Jul-26",
+      "Offshores": 47.36,
+      "Pension Funds": 9.46,
+      "PFs": 9.46,
+      "Banks": 31.18,
+      "Insurance": 6.83,
+      "Others": 5.17
     }
   ],
   "dv01_mom": {
-    "nota": "K PEN por pb = ΔMM PEN × duración modificada × 0.1 (yield = cupón (aprox. a la par))",
+    "nota": "K PEN por pb = ΔMM nominal × precio sucio/100 × duración modificada × 0.1 (precio sucio y duración modificada del reporte diario MEF del 2026-04-30)",
     "Offshores": {
       "26s": 0,
-      "28s": -11,
-      "29s": -51,
-      "31s": -37,
-      "32s": -194,
-      "33s": -30,
-      "34s": 277,
-      "35s": 577,
-      "37s": 603,
-      "39s": 839,
-      "40s": -227,
+      "28s": -12,
+      "29s": -54,
+      "31s": -40,
+      "32s": -205,
+      "33s": -34,
+      "34s": 266,
+      "35s": 610,
+      "37s": 613,
+      "39s": 899,
+      "40s": -184,
       "42s": 1,
       "55s": 0
     },
@@ -636,31 +665,31 @@
       "26s": 0,
       "28s": 0,
       "29s": 0,
-      "31s": -31,
-      "32s": 50,
-      "33s": 184,
-      "34s": 71,
-      "35s": -17,
-      "37s": -740,
-      "39s": 490,
-      "40s": -171,
+      "31s": -35,
+      "32s": 53,
+      "33s": 208,
+      "34s": 68,
+      "35s": -18,
+      "37s": -752,
+      "39s": 526,
+      "40s": -139,
       "42s": 0,
       "55s": 0
     },
     "Banks": {
       "26s": 0,
-      "28s": 7,
+      "28s": 8,
       "29s": -13,
-      "31s": 17,
-      "32s": 147,
-      "33s": -181,
-      "34s": -263,
-      "35s": -83,
-      "37s": 361,
-      "39s": -1192,
-      "40s": 246,
-      "42s": 22,
-      "55s": -2
+      "31s": 19,
+      "32s": 155,
+      "33s": -203,
+      "34s": -253,
+      "35s": -88,
+      "37s": 367,
+      "39s": -1278,
+      "40s": 199,
+      "42s": 23,
+      "55s": -3
     },
     "Insurance": {
       "26s": 0,
@@ -669,13 +698,145 @@
       "31s": 4,
       "32s": -10,
       "33s": -1,
-      "34s": -43,
-      "35s": -14,
+      "34s": -41,
+      "35s": -15,
       "37s": 8,
-      "39s": -32,
-      "40s": 143,
-      "42s": -22,
+      "39s": -34,
+      "40s": 116,
+      "42s": -23,
       "55s": 1
+    }
+  },
+  "analitica_bonos": {
+    "26s": {
+      "interes_corrido": 1.74,
+      "cupon": 8.2,
+      "precio": 101.0903,
+      "yield": 4.3248,
+      "duracion": 0.29,
+      "dmod": 0.28,
+      "bono_id": "12AGO2026",
+      "fuente": "MEF diario 2026-04-30"
+    },
+    "28s": {
+      "interes_corrido": 1.35,
+      "cupon": 6.35,
+      "precio": 104.1372,
+      "yield": 4.41,
+      "duracion": 2.17,
+      "dmod": 2.08,
+      "bono_id": "12AGO2028",
+      "fuente": "MEF diario 2026-04-30"
+    },
+    "29s": {
+      "interes_corrido": 1.26,
+      "cupon": 5.94,
+      "precio": 103.4075,
+      "yield": 4.6007,
+      "duracion": 2.62,
+      "dmod": 2.51,
+      "bono_id": "12FEB2029E",
+      "fuente": "MEF diario 2026-04-30"
+    },
+    "31s": {
+      "interes_corrido": 1.48,
+      "cupon": 6.95,
+      "precio": 108.4777,
+      "yield": 5.09,
+      "duracion": 4.55,
+      "dmod": 4.33,
+      "bono_id": "12AGO2031",
+      "fuente": "MEF diario 2026-04-30"
+    },
+    "32s": {
+      "interes_corrido": 1.31,
+      "cupon": 6.15,
+      "precio": 104.3621,
+      "yield": 5.315,
+      "duracion": 5.34,
+      "dmod": 5.08,
+      "bono_id": "12AGO2032",
+      "fuente": "MEF diario 2026-04-30"
+    },
+    "33s": {
+      "interes_corrido": 1.55,
+      "cupon": 7.3,
+      "precio": 109.8435,
+      "yield": 5.6286,
+      "duracion": 5.86,
+      "dmod": 5.55,
+      "bono_id": "12AGO2033",
+      "fuente": "MEF diario 2026-04-30"
+    },
+    "34s": {
+      "interes_corrido": 1.15,
+      "cupon": 5.4,
+      "precio": 96.8748,
+      "yield": 5.8802,
+      "duracion": 6.78,
+      "dmod": 6.4,
+      "bono_id": "12AGO2034",
+      "fuente": "MEF diario 2026-04-30"
+    },
+    "35s": {
+      "interes_corrido": 1.46,
+      "cupon": 6.85,
+      "precio": 104.4645,
+      "yield": 6.2132,
+      "duracion": 7.08,
+      "dmod": 6.67,
+      "bono_id": "12AGO2035",
+      "fuente": "MEF diario 2026-04-30"
+    },
+    "37s": {
+      "interes_corrido": 1.47,
+      "cupon": 6.9,
+      "precio": 101.504,
+      "yield": 6.7183,
+      "duracion": 8.05,
+      "dmod": 7.54,
+      "bono_id": "12AGO2037",
+      "fuente": "MEF diario 2026-04-30"
+    },
+    "39s": {
+      "interes_corrido": 1.62,
+      "cupon": 7.6,
+      "precio": 105.509,
+      "yield": 6.9732,
+      "duracion": 8.72,
+      "dmod": 8.15,
+      "bono_id": "12AGO2039",
+      "fuente": "MEF diario 2026-04-30"
+    },
+    "40s": {
+      "interes_corrido": 1.14,
+      "cupon": 5.35,
+      "precio": 85.563,
+      "yield": 6.9761,
+      "duracion": 9.8,
+      "dmod": 9.16,
+      "bono_id": "12AGO2040",
+      "fuente": "MEF diario 2026-04-30"
+    },
+    "42s": {
+      "interes_corrido": 1.46,
+      "cupon": 6.85,
+      "precio": 103.9084,
+      "yield": 6.4569,
+      "duracion": 10.01,
+      "dmod": 9.41,
+      "bono_id": "12FEB2042",
+      "fuente": "MEF diario 2026-04-30"
+    },
+    "55s": {
+      "interes_corrido": 1.43,
+      "cupon": 6.714,
+      "precio": 100.8506,
+      "yield": 6.6567,
+      "duracion": 13.16,
+      "dmod": 12.34,
+      "bono_id": "12FEB2055",
+      "fuente": "MEF diario 2026-04-30"
     }
   },
   "detalle_pdf": {
@@ -860,6 +1021,48 @@
         "no residentes": 7.12,
         "afps": 11.26,
         "personas naturales": 0.17
+      },
+      "suma": 100.0
+    },
+    "12FEB2030": {
+      "unidades": 76800,
+      "pct": {
+        "fondos publicos": 7.81,
+        "bancos": 3.91,
+        "seguros": 88.28
+      },
+      "suma": 100.0
+    },
+    "31ENE2035": {
+      "unidades": 910968,
+      "pct": {
+        "no residentes": 3.32,
+        "seguros": 81.86,
+        "bancos": 14.82
+      },
+      "suma": 100.0
+    },
+    "12FEB2040": {
+      "unidades": 360900,
+      "pct": {
+        "seguros": 100.0
+      },
+      "suma": 100.0
+    },
+    "12AGO2046": {
+      "unidades": 694000,
+      "pct": {
+        "seguros": 95.68,
+        "fondos publicos": 4.32
+      },
+      "suma": 100.0
+    },
+    "12FEB2054": {
+      "unidades": 1772650,
+      "pct": {
+        "seguros": 96.33,
+        "fondos publicos": 2.94,
+        "afps": 0.73
       },
       "suma": 100.0
     }

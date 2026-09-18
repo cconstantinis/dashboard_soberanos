@@ -3,10 +3,12 @@
     "periodo": "Jan-2026",
     "periodo_label": "Enero 2026",
     "periodo_anterior": null,
-    "fecha_reporte": "2026-09-17",
+    "fecha_reporte": "2026-09-18",
     "fuente": "Ministerio de Economía y Finanzas del Perú (MEF)",
     "url_tenencias": "https://www.mef.gob.pe/contenidos/deuda_publ/mercado/tenencia_bono_310126.pdf",
     "total_nominal_mn": 181237,
+    "url_daily": "https://www.mef.gob.pe/contenidos/english/report/2026/Daily_01_29_26.pdf",
+    "fecha_daily": "2026-01-29",
     "parser": "v3-coordenadas"
   },
   "tenores": [
@@ -489,69 +491,255 @@
       "Banks": 35.12,
       "Insurance": 7.12,
       "Others": 5.02
+    },
+    {
+      "fecha": "Feb-26",
+      "Offshores": 46.02,
+      "Pension Funds": 8.04,
+      "PFs": 8.04,
+      "Banks": 33.73,
+      "Insurance": 7.15,
+      "Others": 5.06
+    },
+    {
+      "fecha": "Mar-26",
+      "Offshores": 45.31,
+      "Pension Funds": 8.42,
+      "PFs": 8.42,
+      "Banks": 33.62,
+      "Insurance": 7.38,
+      "Others": 5.27
+    },
+    {
+      "fecha": "Apr-26",
+      "Offshores": 46.17,
+      "Pension Funds": 8.32,
+      "PFs": 8.32,
+      "Banks": 32.73,
+      "Insurance": 7.33,
+      "Others": 5.46
+    },
+    {
+      "fecha": "May-26",
+      "Offshores": 46.59,
+      "Pension Funds": 9.23,
+      "PFs": 9.23,
+      "Banks": 31.64,
+      "Insurance": 7.18,
+      "Others": 5.35
+    },
+    {
+      "fecha": "Jun-26",
+      "Offshores": 46.84,
+      "Pension Funds": 9.49,
+      "PFs": 9.49,
+      "Banks": 31.32,
+      "Insurance": 6.87,
+      "Others": 5.49
+    },
+    {
+      "fecha": "Jul-26",
+      "Offshores": 47.36,
+      "Pension Funds": 9.46,
+      "PFs": 9.46,
+      "Banks": 31.18,
+      "Insurance": 6.83,
+      "Others": 5.17
     }
   ],
   "dv01_mom": {
-    "nota": "K PEN por pb = ΔMM PEN × duración modificada × 0.1 (yield = cupón (aprox. a la par))",
+    "nota": "K PEN por pb = ΔMM nominal × precio sucio/100 × duración modificada × 0.1 (precio sucio y duración modificada del reporte diario MEF del 2026-01-29)",
     "Offshores": {
       "26s": 5,
-      "28s": 117,
-      "29s": 302,
-      "31s": 3450,
-      "32s": 7388,
-      "33s": 7502,
-      "34s": 6963,
-      "35s": 6818,
-      "37s": 5815,
-      "39s": 7626,
-      "40s": 5376,
-      "42s": 471,
-      "55s": 305
+      "28s": 129,
+      "29s": 329,
+      "31s": 4073,
+      "32s": 8361,
+      "33s": 9099,
+      "34s": 7067,
+      "35s": 7639,
+      "37s": 6320,
+      "39s": 8846,
+      "40s": 4707,
+      "42s": 529,
+      "55s": 349
     },
     "Pension Funds": {
       "26s": 0,
       "28s": 0,
       "29s": 6,
       "31s": 0,
-      "32s": 37,
-      "33s": 653,
-      "34s": 2810,
-      "35s": 1619,
-      "37s": 2054,
-      "39s": 1302,
-      "40s": 1038,
-      "42s": 232,
-      "55s": 500
+      "32s": 41,
+      "33s": 792,
+      "34s": 2852,
+      "35s": 1813,
+      "37s": 2232,
+      "39s": 1510,
+      "40s": 909,
+      "42s": 260,
+      "55s": 571
     },
     "Banks": {
-      "26s": 45,
-      "28s": 460,
-      "29s": 1692,
-      "31s": 2490,
-      "32s": 3540,
-      "33s": 4903,
-      "34s": 5281,
-      "35s": 6207,
-      "37s": 5380,
-      "39s": 4058,
-      "40s": 2480,
-      "42s": 625,
-      "55s": 384
+      "26s": 49,
+      "28s": 507,
+      "29s": 1843,
+      "31s": 2940,
+      "32s": 4006,
+      "33s": 5946,
+      "34s": 5359,
+      "35s": 6954,
+      "37s": 5847,
+      "39s": 4708,
+      "40s": 2172,
+      "42s": 703,
+      "55s": 439
     },
     "Insurance": {
-      "26s": 4,
-      "28s": 14,
-      "29s": 47,
-      "31s": 113,
-      "32s": 130,
-      "33s": 135,
-      "34s": 169,
-      "35s": 177,
-      "37s": 1794,
-      "39s": 1006,
-      "40s": 2773,
-      "42s": 2173,
-      "55s": 3122
+      "26s": 5,
+      "28s": 15,
+      "29s": 51,
+      "31s": 133,
+      "32s": 147,
+      "33s": 163,
+      "34s": 172,
+      "35s": 199,
+      "37s": 1950,
+      "39s": 1167,
+      "40s": 2428,
+      "42s": 2444,
+      "55s": 3563
+    }
+  },
+  "analitica_bonos": {
+    "26s": {
+      "interes_corrido": 3.79,
+      "cupon": 8.2,
+      "precio": 102.2761,
+      "yield": 3.89,
+      "duracion": 0.52,
+      "dmod": 0.5,
+      "bono_id": "12AGO2026",
+      "fuente": "MEF diario 2026-01-29"
+    },
+    "28s": {
+      "interes_corrido": 2.93,
+      "cupon": 6.35,
+      "precio": 105.6051,
+      "yield": 3.99,
+      "duracion": 2.36,
+      "dmod": 2.27,
+      "bono_id": "12AGO2028",
+      "fuente": "MEF diario 2026-01-29"
+    },
+    "29s": {
+      "interes_corrido": 2.74,
+      "cupon": 5.94,
+      "precio": 105.0856,
+      "yield": 4.1213,
+      "duracion": 2.8,
+      "dmod": 2.69,
+      "bono_id": "12FEB2029E",
+      "fuente": "MEF diario 2026-01-29"
+    },
+    "31s": {
+      "interes_corrido": 3.21,
+      "cupon": 6.95,
+      "precio": 112.226,
+      "yield": 4.4225,
+      "duracion": 4.68,
+      "dmod": 4.48,
+      "bono_id": "12AGO2031",
+      "fuente": "MEF diario 2026-01-29"
+    },
+    "32s": {
+      "interes_corrido": 2.84,
+      "cupon": 6.15,
+      "precio": 108.8279,
+      "yield": 4.5587,
+      "duracion": 5.47,
+      "dmod": 5.23,
+      "bono_id": "12AGO2032",
+      "fuente": "MEF diario 2026-01-29"
+    },
+    "33s": {
+      "interes_corrido": 3.37,
+      "cupon": 7.3,
+      "precio": 114.5627,
+      "yield": 4.9504,
+      "duracion": 5.96,
+      "dmod": 5.68,
+      "bono_id": "12AGO2033",
+      "fuente": "MEF diario 2026-01-29"
+    },
+    "34s": {
+      "interes_corrido": 2.49,
+      "cupon": 5.4,
+      "precio": 99.9811,
+      "yield": 5.3973,
+      "duracion": 6.88,
+      "dmod": 6.53,
+      "bono_id": "12AGO2034",
+      "fuente": "MEF diario 2026-01-29"
+    },
+    "35s": {
+      "interes_corrido": 4.32,
+      "cupon": 6.85,
+      "precio": 107.8295,
+      "yield": 5.77,
+      "duracion": 7.08,
+      "dmod": 6.69,
+      "bono_id": "12AGO2035",
+      "fuente": "MEF diario 2026-01-29"
+    },
+    "37s": {
+      "interes_corrido": 3.19,
+      "cupon": 6.9,
+      "precio": 105.2815,
+      "yield": 6.256,
+      "duracion": 8.11,
+      "dmod": 7.63,
+      "bono_id": "12AGO2037",
+      "fuente": "MEF diario 2026-01-29"
+    },
+    "39s": {
+      "interes_corrido": 3.51,
+      "cupon": 7.6,
+      "precio": 110.12,
+      "yield": 6.4758,
+      "duracion": 8.78,
+      "dmod": 8.24,
+      "bono_id": "12AGO2039",
+      "fuente": "MEF diario 2026-01-29"
+    },
+    "40s": {
+      "interes_corrido": 2.47,
+      "cupon": 5.35,
+      "precio": 89.6605,
+      "yield": 6.4653,
+      "duracion": 9.88,
+      "dmod": 9.28,
+      "bono_id": "12AGO2040",
+      "fuente": "MEF diario 2026-01-29"
+    },
+    "42s": {
+      "interes_corrido": 3.16,
+      "cupon": 6.85,
+      "precio": 107.6229,
+      "yield": 6.1,
+      "duracion": 10.06,
+      "dmod": 9.48,
+      "bono_id": "12FEB2042",
+      "fuente": "MEF diario 2026-01-29"
+    },
+    "55s": {
+      "interes_corrido": 3.1,
+      "cupon": 6.714,
+      "precio": 107.6732,
+      "yield": 6.147,
+      "duracion": 13.47,
+      "dmod": 12.69,
+      "bono_id": "12FEB2055",
+      "fuente": "MEF diario 2026-01-29"
     }
   },
   "detalle_pdf": {
@@ -734,6 +922,48 @@
         "afps": 11.47,
         "bancos": 8.82,
         "fondos publicos": 0.98
+      },
+      "suma": 100.0
+    },
+    "12FEB2030": {
+      "unidades": 76800,
+      "pct": {
+        "fondos publicos": 7.81,
+        "bancos": 3.91,
+        "seguros": 88.28
+      },
+      "suma": 100.0
+    },
+    "31ENE2035": {
+      "unidades": 910968,
+      "pct": {
+        "no residentes": 3.32,
+        "seguros": 81.86,
+        "bancos": 14.82
+      },
+      "suma": 100.0
+    },
+    "12FEB2040": {
+      "unidades": 360900,
+      "pct": {
+        "seguros": 100.0
+      },
+      "suma": 100.0
+    },
+    "12AGO2046": {
+      "unidades": 694000,
+      "pct": {
+        "seguros": 95.68,
+        "fondos publicos": 4.32
+      },
+      "suma": 100.0
+    },
+    "12FEB2054": {
+      "unidades": 1662650,
+      "pct": {
+        "seguros": 89.41,
+        "fondos publicos": 3.13,
+        "afps": 7.46
       },
       "suma": 100.0
     }
