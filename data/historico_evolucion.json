@@ -1,0 +1,162 @@
+[
+  {
+    "fecha": "Mar-23",
+    "Offshores": 42.5,
+    "PFs": 9.6,
+    "Banks": 33.3,
+    "Insurance": 7.5,
+    "Others": 7.1
+  },
+  {
+    "fecha": "May-23",
+    "Offshores": 42.8,
+    "PFs": 9.5,
+    "Banks": 33.4,
+    "Insurance": 7.6,
+    "Others": 6.7
+  },
+  {
+    "fecha": "Jul-23",
+    "Offshores": 43,
+    "PFs": 9.8,
+    "Banks": 33.2,
+    "Insurance": 7.7,
+    "Others": 6.3
+  },
+  {
+    "fecha": "Sep-23",
+    "Offshores": 43.5,
+    "PFs": 9.9,
+    "Banks": 32.8,
+    "Insurance": 7.8,
+    "Others": 6
+  },
+  {
+    "fecha": "Nov-23",
+    "Offshores": 43.8,
+    "PFs": 10.1,
+    "Banks": 32.5,
+    "Insurance": 7.8,
+    "Others": 5.8
+  },
+  {
+    "fecha": "Jan-24",
+    "Offshores": 44.2,
+    "PFs": 10,
+    "Banks": 32.2,
+    "Insurance": 7.7,
+    "Others": 5.9
+  },
+  {
+    "fecha": "Mar-24",
+    "Offshores": 44.5,
+    "PFs": 10.2,
+    "Banks": 31.8,
+    "Insurance": 7.8,
+    "Others": 5.7
+  },
+  {
+    "fecha": "May-24",
+    "Offshores": 44,
+    "PFs": 10.1,
+    "Banks": 32,
+    "Insurance": 7.9,
+    "Others": 6
+  },
+  {
+    "fecha": "Jul-24",
+    "Offshores": 44.3,
+    "PFs": 9.8,
+    "Banks": 32.5,
+    "Insurance": 7.6,
+    "Others": 5.8
+  },
+  {
+    "fecha": "Sep-24",
+    "Offshores": 44.2,
+    "PFs": 9.2,
+    "Banks": 32.7,
+    "Insurance": 7.8,
+    "Others": 6.1
+  },
+  {
+    "fecha": "Nov-24",
+    "Offshores": 44.4,
+    "PFs": 9,
+    "Banks": 33.1,
+    "Insurance": 7.7,
+    "Others": 5.8
+  },
+  {
+    "fecha": "Jan-25",
+    "Offshores": 44.2,
+    "PFs": 8.9,
+    "Banks": 33.3,
+    "Insurance": 7.5,
+    "Others": 6.1
+  },
+  {
+    "fecha": "Mar-25",
+    "Offshores": 44.5,
+    "PFs": 8.7,
+    "Banks": 33,
+    "Insurance": 7.6,
+    "Others": 6.2
+  },
+  {
+    "fecha": "May-25",
+    "Offshores": 44.7,
+    "PFs": 8.8,
+    "Banks": 33.4,
+    "Insurance": 7.3,
+    "Others": 5.8
+  },
+  {
+    "fecha": "Jul-25",
+    "Offshores": 43.8,
+    "PFs": 9.2,
+    "Banks": 31.8,
+    "Insurance": 9,
+    "Others": 6.2
+  },
+  {
+    "fecha": "Sep-25",
+    "Offshores": 44.2,
+    "PFs": 10.5,
+    "Banks": 31.3,
+    "Insurance": 8.5,
+    "Others": 5.5
+  },
+  {
+    "fecha": "Nov-25",
+    "Offshores": 44.6,
+    "PFs": 9.2,
+    "Banks": 32.7,
+    "Insurance": 7.5,
+    "Others": 6
+  },
+  {
+    "fecha": "Jan-26",
+    "Offshores": 44.2,
+    "PFs": 7.6,
+    "Banks": 34.5,
+    "Insurance": 7.6,
+    "Others": 6.1
+  },
+  {
+    "fecha": "Mar-26",
+    "Offshores": 45.3,
+    "PFs": 8.4,
+    "Banks": 33.6,
+    "Insurance": 7.4,
+    "Others": 5.3
+  },
+  {
+    "fecha": "Abr-26",
+    "Offshores": 46.2,
+    "PFs": 8.3,
+    "Banks": 32.7,
+    "Insurance": 7.3,
+    "Others": 5.5
+  }
+]

@@ -4,7 +4,7 @@ Dashboard interactivo de tenencias de Bonos Soberanos del Perú, con datos del *
 
 ## Live Dashboard
 
-👉 **[Ver dashboard](https://TU-USUARIO.github.io/soberanos-dashboard/)**
+👉 **[Ver dashboard](https://cconstantinis.github.io/dashboard_soberanos/)**
 
 ## Contenido
 
@@ -23,27 +23,38 @@ El archivo `data/latest.json` es el que usa el dashboard. Se actualiza automáti
 
 ## Actualización automática
 
-Un GitHub Action (`update-data.yml`) corre el día 5 de cada mes:
-1. Descarga el PDF más reciente del MEF
-2. Parsea los datos clave
-3. Actualiza `data/latest.json`
-4. Hace commit automático
+`update-data.yml` corre lunes y jueves. Si el MEF publicó un reporte nuevo:
+1. Descarga el PDF de tenencias más reciente (ordenado por fecha del nombre de archivo)
+2. Lo parsea por **coordenadas** (el PDF son tortas de Excel: una por bono, dos por fila)
+3. **Valida** que cada torta sume ~100% y que las unidades cuadren con el total MN nominal.
+   Si algo no cuadra, el job falla y **no** publica datos malos.
+4. Recalcula outstanding (MM PEN), MoM vs el mes anterior, DV01 y la serie de evolución
+5. Hace commit de `data/` e `index.html`
 
-También puedes correrlo manualmente desde la pestaña **Actions** de GitHub.
+Desde la pestaña **Actions → Run workflow** se puede re-procesar con `backfill = N`.
 
 ## Actualización manual
 
 ```bash
-pip install pdfplumber requests beautifulsoup4
-python scripts/fetch_mef_data.py
+pip install -r requirements.txt
+python scripts/fetch_mef_data.py                 # último reporte
+python scripts/fetch_mef_data.py --backfill 7    # re-procesa los 7 últimos meses
+python scripts/fetch_mef_data.py --pdf tenencia_bono_310726.pdf   # PDF local
 ```
+
+Notas de datos:
+- Las unidades por bono salen del mismo PDF de tenencias (ya no se usa el PDF de stock).
+- `Others` = Otros + Fondos privados + Personas naturales. SOB29 = 12FEB2029 + 12FEB2029E.
+- DV01 (K PEN por pb) = ΔMM PEN × duración modificada × 0.1. Por defecto yield = cupón;
+  se puede poner yields reales en `data/yields.json`, ej. `{"SOB35": 6.45, "SOB40": 6.90}`.
+- `data/historico_evolucion.json` guarda la serie manual previa a 2026 (Mar-23 → Nov-25).
 
 ## Publicar en GitHub Pages
 
 1. Sube este repositorio a GitHub
 2. Ve a **Settings → Pages**
 3. Source: **Deploy from a branch** → `main` → `/ (root)`
-4. El dashboard queda en `https://TU-USUARIO.github.io/soberanos-dashboard/`
+4. El dashboard queda en `https://cconstantinis.github.io/dashboard_soberanos/`
 
 ## Estructura
 

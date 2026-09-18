@@ -1,8 +1,19 @@
 name: Update Soberanos Data
 on:
   schedule:
-    - cron: "0 10 5 * *"
+    # Todos los lunes y jueves 13:00 UTC (08:00 Lima). El MEF publica el reporte
+    # sin fecha fija (~3-5 semanas después del cierre); si no hay PDF nuevo, no hace nada.
+    - cron: "0 13 * * 1,4"
   workflow_dispatch:
+    inputs:
+      backfill:
+        description: "Re-procesar los N últimos reportes (0 = solo el último)"
+        required: false
+        default: "0"
+      force:
+        description: "Forzar re-proceso aunque ya exista"
+        type: boolean
+        default: false
 jobs:
   update:
     runs-on: ubuntu-latest
@@ -13,8 +24,13 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-      - run: pip install pdfplumber requests beautifulsoup4
-      - run: python scripts/fetch_mef_data.py
+      - run: pip install -r requirements.txt
+      - name: Parsear PDF del MEF
+        run: |
+          ARGS=""
+          if [ "${{ github.event.inputs.backfill }}" != "" ] && [ "${{ github.event.inputs.backfill }}" != "0" ]; then ARGS="--backfill ${{ github.event.inputs.backfill }}"; fi
+          if [ "${{ github.event.inputs.force }}" = "true" ]; then ARGS="$ARGS --force"; fi
+          python scripts/fetch_mef_data.py $ARGS
       - name: Push changes
         run: |
           git config user.name "github-actions[bot]"
