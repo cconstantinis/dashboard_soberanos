@@ -3,7 +3,7 @@
     "periodo": "Jul-2026",
     "periodo_label": "Julio 2026",
     "periodo_anterior": "Jun-2026",
-    "fecha_reporte": "2026-09-17",
+    "fecha_reporte": "2026-09-18",
     "fuente": "Ministerio de Economía y Finanzas del Perú (MEF)",
     "url_tenencias": "https://www.mef.gob.pe/contenidos/deuda_publ/mercado/tenencia_bono_310726.pdf",
     "total_nominal_mn": 187990,
@@ -888,6 +888,49 @@
         "fondos privados": 0.08,
         "personas naturales": 0.16,
         "no residentes": 7.01
+      },
+      "suma": 100.0
+    },
+    "12FEB2030": {
+      "unidades": 76800,
+      "pct": {
+        "fondos publicos": 7.81,
+        "bancos": 3.91,
+        "seguros": 88.28
+      },
+      "suma": 100.0
+    },
+    "31ENE2035": {
+      "unidades": 910968,
+      "pct": {
+        "no residentes": 3.32,
+        "seguros": 81.86,
+        "bancos": 14.82
+      },
+      "suma": 100.0
+    },
+    "12FEB2040": {
+      "unidades": 405900,
+      "pct": {
+        "seguros": 100.0
+      },
+      "suma": 100.0
+    },
+    "12AGO2046": {
+      "unidades": 694000,
+      "pct": {
+        "seguros": 95.68,
+        "fondos publicos": 4.32
+      },
+      "suma": 100.0
+    },
+    "12FEB2054": {
+      "unidades": 1861650,
+      "pct": {
+        "fondos publicos": 2.8,
+        "seguros": 96.29,
+        "bancos": 0.21,
+        "afps": 0.7
       },
       "suma": 100.0
     }
