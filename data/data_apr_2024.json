@@ -1,0 +1,1364 @@
+{
+  "meta": {
+    "periodo": "Apr-2024",
+    "periodo_label": "Abril 2024",
+    "periodo_anterior": "Mar-2024",
+    "fecha_reporte": "2026-09-18",
+    "fuente": "Ministerio de Economía y Finanzas del Perú (MEF)",
+    "url_tenencias": "https://www.mef.gob.pe/contenidos/deuda_publ/mercado/tenencia_bono_300424.pdf",
+    "total_nominal_mn": 151079,
+    "url_daily": "https://www.mef.gob.pe/contenidos/english/report/2024/Daily_04_30_24.pdf",
+    "fecha_daily": "2024-04-30",
+    "parser": "v3-coordenadas"
+  },
+  "tenores": [
+    "24s",
+    "26s",
+    "28s",
+    "29s",
+    "31s",
+    "32s",
+    "33s",
+    "34s",
+    "37s",
+    "40s",
+    "42s",
+    "55s"
+  ],
+  "tenencias_por_tipo": {
+    "Offshores": 37.93,
+    "Pension Funds": 13.73,
+    "Banks": 35.48,
+    "Insurance": 7.4,
+    "Public Funds": 4.19,
+    "Others": 1.27
+  },
+  "outstanding_por_bono": [
+    {
+      "bono": "SOB24",
+      "tenor": "24s",
+      "vencimiento": "12AGO2024",
+      "Offshores": 56,
+      "Pension Funds": 0,
+      "Banks": 4061,
+      "Insurance": 46,
+      "Public Funds": 6,
+      "Others": 69,
+      "PFs": 0,
+      "TOTAL": 4238
+    },
+    {
+      "bono": "SOB26",
+      "tenor": "26s",
+      "vencimiento": "04ENE2026 / 12AGO2026",
+      "Offshores": 1241,
+      "Pension Funds": 0,
+      "Banks": 5585,
+      "Insurance": 63,
+      "Public Funds": 111,
+      "Others": 257,
+      "PFs": 0,
+      "TOTAL": 7257
+    },
+    {
+      "bono": "SOB28",
+      "tenor": "28s",
+      "vencimiento": "12AGO2028",
+      "Offshores": 3098,
+      "Pension Funds": 10,
+      "Banks": 8046,
+      "Insurance": 123,
+      "Public Funds": 75,
+      "Others": 166,
+      "PFs": 10,
+      "TOTAL": 11519
+    },
+    {
+      "bono": "SOB29",
+      "tenor": "29s",
+      "vencimiento": "12FEB2029 / 12FEB2029E",
+      "Offshores": 6251,
+      "Pension Funds": 613,
+      "Banks": 10407,
+      "Insurance": 231,
+      "Public Funds": 154,
+      "Others": 308,
+      "PFs": 613,
+      "TOTAL": 17965
+    },
+    {
+      "bono": "SOB31",
+      "tenor": "31s",
+      "vencimiento": "12AGO2031",
+      "Offshores": 7477,
+      "Pension Funds": 2754,
+      "Banks": 7503,
+      "Insurance": 347,
+      "Public Funds": 347,
+      "Others": 321,
+      "PFs": 2754,
+      "TOTAL": 18748
+    },
+    {
+      "bono": "SOB32",
+      "tenor": "32s",
+      "vencimiento": "12AGO2032",
+      "Offshores": 10694,
+      "Pension Funds": 4212,
+      "Banks": 4306,
+      "Insurance": 244,
+      "Public Funds": 302,
+      "Others": 214,
+      "PFs": 4212,
+      "TOTAL": 19971
+    },
+    {
+      "bono": "SOB33",
+      "tenor": "33s",
+      "vencimiento": "12AGO2033",
+      "Offshores": 9115,
+      "Pension Funds": 2306,
+      "Banks": 4955,
+      "Insurance": 217,
+      "Public Funds": 161,
+      "Others": 54,
+      "PFs": 2306,
+      "TOTAL": 16808
+    },
+    {
+      "bono": "SOB34",
+      "tenor": "34s",
+      "vencimiento": "12AGO2034",
+      "Offshores": 9473,
+      "Pension Funds": 2210,
+      "Banks": 3067,
+      "Insurance": 291,
+      "Public Funds": 797,
+      "Others": 303,
+      "PFs": 2210,
+      "TOTAL": 16140
+    },
+    {
+      "bono": "SOB37",
+      "tenor": "37s",
+      "vencimiento": "12AGO2037",
+      "Offshores": 5913,
+      "Pension Funds": 5024,
+      "Banks": 3465,
+      "Insurance": 2508,
+      "Public Funds": 2179,
+      "Others": 191,
+      "PFs": 5024,
+      "TOTAL": 19280
+    },
+    {
+      "bono": "SOB40",
+      "tenor": "40s",
+      "vencimiento": "12AGO2040",
+      "Offshores": 2915,
+      "Pension Funds": 3168,
+      "Banks": 1460,
+      "Insurance": 2414,
+      "Public Funds": 890,
+      "Others": 17,
+      "PFs": 3168,
+      "TOTAL": 10866
+    },
+    {
+      "bono": "SOB42",
+      "tenor": "42s",
+      "vencimiento": "12FEB2042",
+      "Offshores": 811,
+      "Pension Funds": 140,
+      "Banks": 472,
+      "Insurance": 2320,
+      "Public Funds": 1283,
+      "Others": 7,
+      "PFs": 140,
+      "TOTAL": 5033
+    },
+    {
+      "bono": "SOB55",
+      "tenor": "55s",
+      "vencimiento": "12FEB2055",
+      "Offshores": 258,
+      "Pension Funds": 311,
+      "Banks": 272,
+      "Insurance": 2377,
+      "Public Funds": 31,
+      "Others": 5,
+      "PFs": 311,
+      "TOTAL": 3254
+    }
+  ],
+  "cambios_mom": {
+    "nota": "Cambios en MM PEN MoM (Apr-2024 vs Mar-2024)",
+    "nota2": "Calculado a partir de las tenencias MEF (% por bono × unidades en circulación). Afectado por REPOs AFP-BCRP si los hubiera.",
+    "por_inversor": {
+      "Offshores": {
+        "24s": -10,
+        "26s": -124,
+        "28s": -85,
+        "29s": -284,
+        "31s": 396,
+        "32s": 697,
+        "33s": 783,
+        "34s": 397,
+        "37s": 1099,
+        "40s": 168,
+        "42s": -8,
+        "55s": -11,
+        "Total": 3018
+      },
+      "PFs": {
+        "24s": 0,
+        "26s": 0,
+        "28s": 10,
+        "29s": 480,
+        "31s": -109,
+        "32s": -793,
+        "33s": -918,
+        "34s": -299,
+        "37s": -1271,
+        "40s": -76,
+        "42s": 0,
+        "55s": 0,
+        "Total": -2976
+      },
+      "Banks": {
+        "24s": 23,
+        "26s": 119,
+        "28s": 71,
+        "29s": -199,
+        "31s": -298,
+        "32s": 159,
+        "33s": 101,
+        "34s": 93,
+        "37s": -32,
+        "40s": -40,
+        "42s": 5,
+        "55s": 11,
+        "Total": 13
+      },
+      "Insurance": {
+        "24s": -2,
+        "26s": 2,
+        "28s": 0,
+        "29s": -6,
+        "31s": 23,
+        "32s": 3,
+        "33s": 29,
+        "34s": 9,
+        "37s": 167,
+        "40s": 46,
+        "42s": 4,
+        "55s": 1,
+        "Total": 276
+      },
+      "Public Funds": {
+        "24s": 0,
+        "26s": 0,
+        "28s": 0,
+        "29s": 6,
+        "31s": 0,
+        "32s": 10,
+        "33s": 13,
+        "34s": 0,
+        "37s": 14,
+        "40s": 1,
+        "42s": 0,
+        "55s": 0,
+        "Total": 44
+      },
+      "Others": {
+        "24s": -10,
+        "26s": 2,
+        "28s": 4,
+        "29s": 2,
+        "31s": -11,
+        "32s": 5,
+        "33s": -8,
+        "34s": 2,
+        "37s": 23,
+        "40s": 0,
+        "42s": 0,
+        "55s": 0,
+        "Total": 9
+      }
+    }
+  },
+  "ownership_pct_por_tenor": {
+    "24s": {
+      "Offshores": 1.3,
+      "Pension Funds": 0.0,
+      "Banks": 95.8,
+      "Insurance": 1.1,
+      "Public Funds": 0.1,
+      "Others": 1.6,
+      "PFs": 0.0
+    },
+    "26s": {
+      "Offshores": 17.1,
+      "Pension Funds": 0.0,
+      "Banks": 77.0,
+      "Insurance": 0.9,
+      "Public Funds": 1.5,
+      "Others": 3.5,
+      "PFs": 0.0
+    },
+    "28s": {
+      "Offshores": 26.9,
+      "Pension Funds": 0.1,
+      "Banks": 69.8,
+      "Insurance": 1.1,
+      "Public Funds": 0.7,
+      "Others": 1.4,
+      "PFs": 0.1
+    },
+    "29s": {
+      "Offshores": 34.8,
+      "Pension Funds": 3.4,
+      "Banks": 57.9,
+      "Insurance": 1.3,
+      "Public Funds": 0.9,
+      "Others": 1.7,
+      "PFs": 3.4
+    },
+    "31s": {
+      "Offshores": 39.9,
+      "Pension Funds": 14.7,
+      "Banks": 40.0,
+      "Insurance": 1.9,
+      "Public Funds": 1.9,
+      "Others": 1.7,
+      "PFs": 14.7
+    },
+    "32s": {
+      "Offshores": 53.6,
+      "Pension Funds": 21.1,
+      "Banks": 21.6,
+      "Insurance": 1.2,
+      "Public Funds": 1.5,
+      "Others": 1.1,
+      "PFs": 21.1
+    },
+    "33s": {
+      "Offshores": 54.2,
+      "Pension Funds": 13.7,
+      "Banks": 29.5,
+      "Insurance": 1.3,
+      "Public Funds": 1.0,
+      "Others": 0.3,
+      "PFs": 13.7
+    },
+    "34s": {
+      "Offshores": 58.7,
+      "Pension Funds": 13.7,
+      "Banks": 19.0,
+      "Insurance": 1.8,
+      "Public Funds": 4.9,
+      "Others": 1.9,
+      "PFs": 13.7
+    },
+    "37s": {
+      "Offshores": 30.7,
+      "Pension Funds": 26.1,
+      "Banks": 18.0,
+      "Insurance": 13.0,
+      "Public Funds": 11.3,
+      "Others": 1.0,
+      "PFs": 26.1
+    },
+    "40s": {
+      "Offshores": 26.8,
+      "Pension Funds": 29.2,
+      "Banks": 13.4,
+      "Insurance": 22.2,
+      "Public Funds": 8.2,
+      "Others": 0.2,
+      "PFs": 29.2
+    },
+    "42s": {
+      "Offshores": 16.1,
+      "Pension Funds": 2.8,
+      "Banks": 9.4,
+      "Insurance": 46.1,
+      "Public Funds": 25.5,
+      "Others": 0.1,
+      "PFs": 2.8
+    },
+    "55s": {
+      "Offshores": 7.9,
+      "Pension Funds": 9.6,
+      "Banks": 8.4,
+      "Insurance": 73.0,
+      "Public Funds": 1.0,
+      "Others": 0.2,
+      "PFs": 9.6
+    }
+  },
+  "evolucion_ownership": [
+    {
+      "fecha": "Mar-23",
+      "Offshores": 39.38,
+      "Pension Funds": 16.51,
+      "PFs": 16.51,
+      "Banks": 31.77,
+      "Insurance": 6.71,
+      "Others": 5.62
+    },
+    {
+      "fecha": "Apr-23",
+      "Offshores": 39.74,
+      "Pension Funds": 17.07,
+      "PFs": 17.07,
+      "Banks": 30.92,
+      "Insurance": 6.65,
+      "Others": 5.62
+    },
+    {
+      "fecha": "May-23",
+      "Offshores": 40.25,
+      "Pension Funds": 16.59,
+      "PFs": 16.59,
+      "Banks": 31.13,
+      "Insurance": 6.56,
+      "Others": 5.48
+    },
+    {
+      "fecha": "Jun-23",
+      "Offshores": 39.76,
+      "Pension Funds": 16.91,
+      "PFs": 16.91,
+      "Banks": 31.48,
+      "Insurance": 6.47,
+      "Others": 5.38
+    },
+    {
+      "fecha": "Jul-23",
+      "Offshores": 38.51,
+      "Pension Funds": 16.98,
+      "PFs": 16.98,
+      "Banks": 32.68,
+      "Insurance": 6.49,
+      "Others": 5.35
+    },
+    {
+      "fecha": "Aug-23",
+      "Offshores": 37.17,
+      "Pension Funds": 17.41,
+      "PFs": 17.41,
+      "Banks": 33.36,
+      "Insurance": 6.69,
+      "Others": 5.38
+    },
+    {
+      "fecha": "Sep-23",
+      "Offshores": 38.07,
+      "Pension Funds": 16.05,
+      "PFs": 16.05,
+      "Banks": 33.76,
+      "Insurance": 6.8,
+      "Others": 5.32
+    },
+    {
+      "fecha": "Oct-23",
+      "Offshores": 37.54,
+      "Pension Funds": 16.04,
+      "PFs": 16.04,
+      "Banks": 33.89,
+      "Insurance": 6.97,
+      "Others": 5.56
+    },
+    {
+      "fecha": "Nov-23",
+      "Offshores": 37.26,
+      "Pension Funds": 16.12,
+      "PFs": 16.12,
+      "Banks": 34.19,
+      "Insurance": 7.0,
+      "Others": 5.43
+    },
+    {
+      "fecha": "Dec-23",
+      "Offshores": 36.95,
+      "Pension Funds": 16.41,
+      "PFs": 16.41,
+      "Banks": 34.25,
+      "Insurance": 6.99,
+      "Others": 5.4
+    },
+    {
+      "fecha": "Jan-24",
+      "Offshores": 36.89,
+      "Pension Funds": 15.94,
+      "PFs": 15.94,
+      "Banks": 34.79,
+      "Insurance": 6.99,
+      "Others": 5.39
+    },
+    {
+      "fecha": "Feb-24",
+      "Offshores": 36.19,
+      "Pension Funds": 15.98,
+      "PFs": 15.98,
+      "Banks": 35.33,
+      "Insurance": 7.12,
+      "Others": 5.39
+    },
+    {
+      "fecha": "Mar-24",
+      "Offshores": 36.02,
+      "Pension Funds": 15.74,
+      "PFs": 15.74,
+      "Banks": 35.56,
+      "Insurance": 7.24,
+      "Others": 5.44
+    },
+    {
+      "fecha": "Apr-24",
+      "Offshores": 37.93,
+      "Pension Funds": 13.73,
+      "PFs": 13.73,
+      "Banks": 35.48,
+      "Insurance": 7.4,
+      "Others": 5.46
+    },
+    {
+      "fecha": "Jan-26",
+      "Offshores": 45.04,
+      "Pension Funds": 7.71,
+      "PFs": 7.71,
+      "Banks": 35.12,
+      "Insurance": 7.12,
+      "Others": 5.02
+    },
+    {
+      "fecha": "Feb-26",
+      "Offshores": 46.02,
+      "Pension Funds": 8.04,
+      "PFs": 8.04,
+      "Banks": 33.73,
+      "Insurance": 7.15,
+      "Others": 5.06
+    },
+    {
+      "fecha": "Mar-26",
+      "Offshores": 45.31,
+      "Pension Funds": 8.42,
+      "PFs": 8.42,
+      "Banks": 33.62,
+      "Insurance": 7.38,
+      "Others": 5.27
+    },
+    {
+      "fecha": "Apr-26",
+      "Offshores": 46.17,
+      "Pension Funds": 8.32,
+      "PFs": 8.32,
+      "Banks": 32.73,
+      "Insurance": 7.33,
+      "Others": 5.46
+    },
+    {
+      "fecha": "May-26",
+      "Offshores": 46.59,
+      "Pension Funds": 9.23,
+      "PFs": 9.23,
+      "Banks": 31.64,
+      "Insurance": 7.18,
+      "Others": 5.35
+    },
+    {
+      "fecha": "Jun-26",
+      "Offshores": 46.84,
+      "Pension Funds": 9.49,
+      "PFs": 9.49,
+      "Banks": 31.32,
+      "Insurance": 6.87,
+      "Others": 5.49
+    },
+    {
+      "fecha": "Jul-26",
+      "Offshores": 47.36,
+      "Pension Funds": 9.46,
+      "PFs": 9.46,
+      "Banks": 31.18,
+      "Insurance": 6.83,
+      "Others": 5.17
+    }
+  ],
+  "dv01_mom": {
+    "nota": "K PEN por pb = ΔMM nominal × precio sucio/100 × duración modificada × 0.1 (precio sucio y duración modificada del reporte diario MEF del 2024-04-30)",
+    "Offshores": {
+      "24s": 0,
+      "26s": -27,
+      "28s": -32,
+      "29s": -115,
+      "31s": 222,
+      "32s": 410,
+      "33s": 518,
+      "34s": 254,
+      "37s": 869,
+      "40s": 133,
+      "42s": -7,
+      "55s": -12
+    },
+    "Pension Funds": {
+      "24s": 0,
+      "26s": 0,
+      "28s": 4,
+      "29s": 194,
+      "31s": -61,
+      "32s": -466,
+      "33s": -607,
+      "34s": -192,
+      "37s": -1005,
+      "40s": -60,
+      "42s": 0,
+      "55s": 0
+    },
+    "Banks": {
+      "24s": 1,
+      "26s": 26,
+      "28s": 27,
+      "29s": -80,
+      "31s": -167,
+      "32s": 93,
+      "33s": 67,
+      "34s": 60,
+      "37s": -25,
+      "40s": -32,
+      "42s": 5,
+      "55s": 12
+    },
+    "Insurance": {
+      "24s": 0,
+      "26s": 0,
+      "28s": 0,
+      "29s": -2,
+      "31s": 13,
+      "32s": 2,
+      "33s": 19,
+      "34s": 6,
+      "37s": 132,
+      "40s": 36,
+      "42s": 4,
+      "55s": 1
+    }
+  },
+  "analitica_bonos": {
+    "24s": {
+      "interes_corrido": 1.22,
+      "cupon": 5.7,
+      "precio": 100.0466,
+      "yield": 5.5124,
+      "duracion": 0.29,
+      "dmod": 0.27,
+      "bono_id": "12AGO2024",
+      "fuente": "MEF diario 2024-04-30"
+    },
+    "26s": {
+      "interes_corrido": 1.76,
+      "cupon": 8.2,
+      "precio": 105.8384,
+      "yield": 5.4404,
+      "duracion": 2.13,
+      "dmod": 2.02,
+      "bono_id": "12AGO2026",
+      "fuente": "MEF diario 2024-04-30"
+    },
+    "28s": {
+      "interes_corrido": 1.36,
+      "cupon": 6.35,
+      "precio": 101.9239,
+      "yield": 5.832,
+      "duracion": 3.83,
+      "dmod": 3.62,
+      "bono_id": "12AGO2028",
+      "fuente": "MEF diario 2024-04-30"
+    },
+    "29s": {
+      "interes_corrido": 1.27,
+      "cupon": 5.94,
+      "precio": 99.6462,
+      "yield": 6.0207,
+      "duracion": 4.25,
+      "dmod": 4.0,
+      "bono_id": "12FEB2029E",
+      "fuente": "MEF diario 2024-04-30"
+    },
+    "31s": {
+      "interes_corrido": 1.49,
+      "cupon": 6.95,
+      "precio": 100.9496,
+      "yield": 6.795,
+      "duracion": 5.85,
+      "dmod": 5.47,
+      "bono_id": "12AGO2031",
+      "fuente": "MEF diario 2024-04-30"
+    },
+    "32s": {
+      "interes_corrido": 1.32,
+      "cupon": 6.15,
+      "precio": 94.5537,
+      "yield": 7.044,
+      "duracion": 6.56,
+      "dmod": 6.13,
+      "bono_id": "12AGO2032",
+      "fuente": "MEF diario 2024-04-30"
+    },
+    "33s": {
+      "interes_corrido": 1.56,
+      "cupon": 7.3,
+      "precio": 100.9406,
+      "yield": 7.1779,
+      "duracion": 6.91,
+      "dmod": 6.45,
+      "bono_id": "12AGO2033",
+      "fuente": "MEF diario 2024-04-30"
+    },
+    "34s": {
+      "interes_corrido": 1.16,
+      "cupon": 5.4,
+      "precio": 86.6275,
+      "yield": 7.2899,
+      "duracion": 7.84,
+      "dmod": 7.3,
+      "bono_id": "12AGO2034",
+      "fuente": "MEF diario 2024-04-30"
+    },
+    "37s": {
+      "interes_corrido": 1.48,
+      "cupon": 6.9,
+      "precio": 95.274,
+      "yield": 7.4917,
+      "duracion": 8.78,
+      "dmod": 8.17,
+      "bono_id": "12AGO2037",
+      "fuente": "MEF diario 2024-04-30"
+    },
+    "40s": {
+      "interes_corrido": 1.15,
+      "cupon": 5.35,
+      "precio": 80.5706,
+      "yield": 7.45,
+      "duracion": 10.41,
+      "dmod": 9.69,
+      "bono_id": "12AGO2040",
+      "fuente": "MEF diario 2024-04-30"
+    },
+    "42s": {
+      "interes_corrido": 1.47,
+      "cupon": 6.85,
+      "precio": 94.6582,
+      "yield": 7.4172,
+      "duracion": 10.33,
+      "dmod": 9.61,
+      "bono_id": "12FEB2042",
+      "fuente": "MEF diario 2024-04-30"
+    },
+    "55s": {
+      "interes_corrido": 1.44,
+      "cupon": 6.714,
+      "precio": 91.2757,
+      "yield": 7.4639,
+      "duracion": 12.67,
+      "dmod": 11.79,
+      "bono_id": "12FEB2055",
+      "fuente": "MEF diario 2024-04-30"
+    }
+  },
+  "detalle_pdf": {
+    "12AGO2024": {
+      "unidades": 4237954,
+      "pct": {
+        "no residentes": 1.32,
+        "seguros": 1.08,
+        "fondos privados": 0.02,
+        "otros": 1.61,
+        "bancos": 95.83,
+        "fondos publicos": 0.14
+      },
+      "suma": 100.0
+    },
+    "04ENE2026": {
+      "unidades": 215367,
+      "pct": {
+        "bancos": 100.0
+      },
+      "suma": 100.0
+    },
+    "12AGO2026": {
+      "unidades": 7041793,
+      "pct": {
+        "fondos publicos": 1.57,
+        "no residentes": 17.63,
+        "bancos": 76.26,
+        "seguros": 0.89,
+        "otros": 3.51,
+        "fondos privados": 0.14
+      },
+      "suma": 100.0
+    },
+    "12AGO2028": {
+      "unidades": 11518546,
+      "pct": {
+        "seguros": 1.07,
+        "fondos publicos": 0.65,
+        "no residentes": 26.9,
+        "afps": 0.09,
+        "otros": 1.36,
+        "fondos privados": 0.06,
+        "bancos": 69.85,
+        "personas naturales": 0.02
+      },
+      "suma": 100.0
+    },
+    "12FEB2029": {
+      "unidades": 30969,
+      "pct": {
+        "fondos publicos": 9.69,
+        "no residentes": 85.57,
+        "personas naturales": 4.74
+      },
+      "suma": 100.0
+    },
+    "12FEB2029E": {
+      "unidades": 17933761,
+      "pct": {
+        "fondos publicos": 0.84,
+        "seguros": 1.29,
+        "personas naturales": 0.01,
+        "no residentes": 34.71,
+        "afps": 3.42,
+        "bancos": 58.03,
+        "otros": 1.59,
+        "fondos privados": 0.11
+      },
+      "suma": 100.0
+    },
+    "12AGO2031": {
+      "unidades": 18747734,
+      "pct": {
+        "no residentes": 39.88,
+        "personas naturales": 0.01,
+        "afps": 14.69,
+        "fondos publicos": 1.85,
+        "seguros": 1.85,
+        "otros": 1.57,
+        "bancos": 40.02,
+        "fondos privados": 0.13
+      },
+      "suma": 100.0
+    },
+    "12AGO2032": {
+      "unidades": 19970832,
+      "pct": {
+        "personas naturales": 0.01,
+        "no residentes": 53.55,
+        "seguros": 1.22,
+        "bancos": 21.56,
+        "otros": 0.96,
+        "fondos privados": 0.1,
+        "afps": 21.09,
+        "fondos publicos": 1.51
+      },
+      "suma": 100.0
+    },
+    "12AGO2033": {
+      "unidades": 16807678,
+      "pct": {
+        "seguros": 1.29,
+        "no residentes": 54.23,
+        "afps": 13.72,
+        "bancos": 29.48,
+        "otros": 0.15,
+        "personas naturales": 0.02,
+        "fondos publicos": 0.96,
+        "fondos privados": 0.15
+      },
+      "suma": 100.0
+    },
+    "12AGO2034": {
+      "unidades": 16140351,
+      "pct": {
+        "fondos privados": 0.08,
+        "seguros": 1.8,
+        "afps": 13.69,
+        "personas naturales": 0.02,
+        "bancos": 19.0,
+        "no residentes": 58.69,
+        "otros": 1.78,
+        "fondos publicos": 4.94
+      },
+      "suma": 100.0
+    },
+    "12AGO2037": {
+      "unidades": 19279701,
+      "pct": {
+        "fondos publicos": 11.3,
+        "otros": 0.9,
+        "no residentes": 30.67,
+        "personas naturales": 0.06,
+        "afps": 26.06,
+        "seguros": 13.01,
+        "bancos": 17.97,
+        "fondos privados": 0.03
+      },
+      "suma": 100.0
+    },
+    "12AGO2040": {
+      "unidades": 10865720,
+      "pct": {
+        "seguros": 22.22,
+        "bancos": 13.44,
+        "no residentes": 26.83,
+        "otros": 0.16,
+        "afps": 29.16,
+        "fondos publicos": 8.19
+      },
+      "suma": 100.0
+    },
+    "12FEB2042": {
+      "unidades": 5032973,
+      "pct": {
+        "seguros": 46.09,
+        "bancos": 9.38,
+        "afps": 2.78,
+        "no residentes": 16.12,
+        "personas naturales": 0.12,
+        "fondos publicos": 25.49,
+        "fondos privados": 0.02
+      },
+      "suma": 100.0
+    },
+    "12FEB2055": {
+      "unidades": 3254274,
+      "pct": {
+        "personas naturales": 0.16,
+        "no residentes": 7.93,
+        "afps": 9.56,
+        "fondos publicos": 0.96,
+        "bancos": 8.36,
+        "seguros": 73.03
+      },
+      "suma": 100.0
+    },
+    "13OCT2024": {
+      "unidades": 884246,
+      "pct": {
+        "afps": 28.21,
+        "seguros": 40.33,
+        "bancos": 11.72,
+        "no residentes": 15.32,
+        "fondos publicos": 4.42
+      },
+      "suma": 100.0
+    },
+    "12FEB2030": {
+      "unidades": 76800,
+      "pct": {
+        "seguros": 88.28,
+        "fondos publicos": 7.81,
+        "bancos": 3.91
+      },
+      "suma": 100.0
+    },
+    "31ENE2035": {
+      "unidades": 910968,
+      "pct": {
+        "bancos": 14.82,
+        "fondos publicos": 0.33,
+        "no residentes": 3.32,
+        "seguros": 81.53
+      },
+      "suma": 100.0
+    },
+    "12FEB2040": {
+      "unidades": 228000,
+      "pct": {
+        "seguros": 100.0
+      },
+      "suma": 100.0
+    },
+    "12AGO2046": {
+      "unidades": 424000,
+      "pct": {
+        "seguros": 100.0
+      },
+      "suma": 100.0
+    },
+    "12FEB2054": {
+      "unidades": 383250,
+      "pct": {
+        "seguros": 98.17,
+        "fondos publicos": 1.83
+      },
+      "suma": 100.0
+    }
+  },
+  "flujos_mensuales": [
+    {
+      "fecha": "Apr-23",
+      "Offshores": {
+        "nominal": 1356,
+        "dv01": 698
+      },
+      "Pension Funds": {
+        "nominal": 1134,
+        "dv01": 1038
+      },
+      "Banks": {
+        "nominal": -477,
+        "dv01": -261
+      },
+      "Insurance": {
+        "nominal": 65,
+        "dv01": 56
+      }
+    },
+    {
+      "fecha": "May-23",
+      "Offshores": {
+        "nominal": 2213,
+        "dv01": 1253
+      },
+      "Pension Funds": {
+        "nominal": -47,
+        "dv01": 356
+      },
+      "Banks": {
+        "nominal": 1443,
+        "dv01": 776
+      },
+      "Insurance": {
+        "nominal": 128,
+        "dv01": 104
+      }
+    },
+    {
+      "fecha": "Jun-23",
+      "Offshores": {
+        "nominal": 506,
+        "dv01": 3607
+      },
+      "Pension Funds": {
+        "nominal": 968,
+        "dv01": 1139
+      },
+      "Banks": {
+        "nominal": 1463,
+        "dv01": 3372
+      },
+      "Insurance": {
+        "nominal": 62,
+        "dv01": 68
+      }
+    },
+    {
+      "fecha": "Jul-23",
+      "Offshores": {
+        "nominal": -1717,
+        "dv01": -907
+      },
+      "Pension Funds": {
+        "nominal": 136,
+        "dv01": 316
+      },
+      "Banks": {
+        "nominal": 1819,
+        "dv01": 807
+      },
+      "Insurance": {
+        "nominal": 44,
+        "dv01": 38
+      }
+    },
+    {
+      "fecha": "Aug-23",
+      "Offshores": {
+        "nominal": -1800,
+        "dv01": -1154
+      },
+      "Pension Funds": {
+        "nominal": 693,
+        "dv01": 535
+      },
+      "Banks": {
+        "nominal": 1107,
+        "dv01": 565
+      },
+      "Insurance": {
+        "nominal": 317,
+        "dv01": 284
+      }
+    },
+    {
+      "fecha": "Sep-23",
+      "Offshores": {
+        "nominal": 1340,
+        "dv01": 668
+      },
+      "Pension Funds": {
+        "nominal": -1957,
+        "dv01": -1092
+      },
+      "Banks": {
+        "nominal": 607,
+        "dv01": 569
+      },
+      "Insurance": {
+        "nominal": 168,
+        "dv01": 179
+      }
+    },
+    {
+      "fecha": "Oct-23",
+      "Offshores": {
+        "nominal": -747,
+        "dv01": -494
+      },
+      "Pension Funds": {
+        "nominal": -11,
+        "dv01": -48
+      },
+      "Banks": {
+        "nominal": 207,
+        "dv01": 166
+      },
+      "Insurance": {
+        "nominal": 252,
+        "dv01": 209
+      }
+    },
+    {
+      "fecha": "Nov-23",
+      "Offshores": {
+        "nominal": 43,
+        "dv01": -55
+      },
+      "Pension Funds": {
+        "nominal": 313,
+        "dv01": 335
+      },
+      "Banks": {
+        "nominal": 850,
+        "dv01": 551
+      },
+      "Insurance": {
+        "nominal": 126,
+        "dv01": 107
+      }
+    },
+    {
+      "fecha": "Dec-23",
+      "Offshores": {
+        "nominal": 29,
+        "dv01": 45
+      },
+      "Pension Funds": {
+        "nominal": 637,
+        "dv01": 710
+      },
+      "Banks": {
+        "nominal": 543,
+        "dv01": 178
+      },
+      "Insurance": {
+        "nominal": 77,
+        "dv01": 46
+      }
+    },
+    {
+      "fecha": "Jan-24",
+      "Offshores": {
+        "nominal": 117,
+        "dv01": 561
+      },
+      "Pension Funds": {
+        "nominal": -601,
+        "dv01": -502
+      },
+      "Banks": {
+        "nominal": 991,
+        "dv01": 326
+      },
+      "Insurance": {
+        "nominal": 44,
+        "dv01": 62
+      }
+    },
+    {
+      "fecha": "Feb-24",
+      "Offshores": {
+        "nominal": -505,
+        "dv01": -117
+      },
+      "Pension Funds": {
+        "nominal": 289,
+        "dv01": 474
+      },
+      "Banks": {
+        "nominal": 1324,
+        "dv01": 481
+      },
+      "Insurance": {
+        "nominal": 289,
+        "dv01": 241
+      }
+    },
+    {
+      "fecha": "Mar-24",
+      "Offshores": {
+        "nominal": -50,
+        "dv01": -106
+      },
+      "Pension Funds": {
+        "nominal": -262,
+        "dv01": -128
+      },
+      "Banks": {
+        "nominal": 548,
+        "dv01": 402
+      },
+      "Insurance": {
+        "nominal": 221,
+        "dv01": 173
+      }
+    },
+    {
+      "fecha": "Apr-24",
+      "Offshores": {
+        "nominal": 3018,
+        "dv01": 2213
+      },
+      "Pension Funds": {
+        "nominal": -2976,
+        "dv01": -2193
+      },
+      "Banks": {
+        "nominal": 13,
+        "dv01": -13
+      },
+      "Insurance": {
+        "nominal": 276,
+        "dv01": 211
+      }
+    },
+    {
+      "fecha": "Feb-26",
+      "Offshores": {
+        "nominal": 2470,
+        "dv01": 1897
+      },
+      "Pension Funds": {
+        "nominal": 709,
+        "dv01": 429
+      },
+      "Banks": {
+        "nominal": -2013,
+        "dv01": -1376
+      },
+      "Insurance": {
+        "nominal": 157,
+        "dv01": 123
+      }
+    },
+    {
+      "fecha": "Mar-26",
+      "Offshores": {
+        "nominal": -1006,
+        "dv01": -614
+      },
+      "Pension Funds": {
+        "nominal": 750,
+        "dv01": 541
+      },
+      "Banks": {
+        "nominal": 16,
+        "dv01": -133
+      },
+      "Insurance": {
+        "nominal": 469,
+        "dv01": 416
+      }
+    },
+    {
+      "fecha": "Apr-26",
+      "Offshores": {
+        "nominal": 2094,
+        "dv01": 1860
+      },
+      "Pension Funds": {
+        "nominal": -97,
+        "dv01": -89
+      },
+      "Banks": {
+        "nominal": -1260,
+        "dv01": -1067
+      },
+      "Insurance": {
+        "nominal": -4,
+        "dv01": 5
+      }
+    },
+    {
+      "fecha": "May-26",
+      "Offshores": {
+        "nominal": 1372,
+        "dv01": 1132
+      },
+      "Pension Funds": {
+        "nominal": 1812,
+        "dv01": 1307
+      },
+      "Banks": {
+        "nominal": -1600,
+        "dv01": -1217
+      },
+      "Insurance": {
+        "nominal": -187,
+        "dv01": -164
+      }
+    },
+    {
+      "fecha": "Jun-26",
+      "Offshores": {
+        "nominal": 1110,
+        "dv01": 1105
+      },
+      "Pension Funds": {
+        "nominal": 598,
+        "dv01": 347
+      },
+      "Banks": {
+        "nominal": -174,
+        "dv01": -155
+      },
+      "Insurance": {
+        "nominal": -488,
+        "dv01": -354
+      }
+    },
+    {
+      "fecha": "Jul-26",
+      "Offshores": {
+        "nominal": 1375,
+        "dv01": 886
+      },
+      "Pension Funds": {
+        "nominal": 27,
+        "dv01": -213
+      },
+      "Banks": {
+        "nominal": 5,
+        "dv01": 157
+      },
+      "Insurance": {
+        "nominal": -12,
+        "dv01": 4
+      }
+    }
+  ]
+}
