@@ -18,6 +18,9 @@ on:
         description: "Forzar re-proceso aunque ya exista"
         type: boolean
         default: false
+concurrency:
+  group: data-push
+  cancel-in-progress: false
 jobs:
   update:
     runs-on: ubuntu-latest

@@ -53,6 +53,33 @@ Notas de datos:
   Si no se encuentra, se usa una duración estimada con yield = cupón (o `data/yields.json`).
 - `data/historico_evolucion.json` guarda la serie manual previa a 2026 (Mar-23 → Nov-25).
 
+## Tab AFPs (SBS semanal)
+
+Segundo tab del dashboard (`#afps`): cartera administrada de las AFPs por instrumento, con datos del
+[Boletín Estadístico Semanal del SPP](https://www.sbs.gob.pe/app/stats_net/stats/EstadisticaBoletinSPPSemanal.aspx)
+de la SBS (Cuadro 8 — Total, y Cuadros 9-12 — Fondos 0 a 3). Reemplaza el Excel *Resumen AFPs*.
+
+- **Fuente:** el índice de la SBS tiene anti-bot, pero los XLS se descargan directo con una URL predecible:
+  `intranet2.sbs.gob.pe/estadistica/financiera/{AAAA}/{Mes}/FP-1336-{NN}-{mm}{AAAA}.XLS` (a veces es un .xlsx con extensión .XLS).
+- **Parser:** `scripts/fetch_sbs_afp.py` lee cada línea por su etiqueta dentro de su sección (no por número de fila),
+  así resiste filas nuevas y cambios de notas ("(5)" → "5/").
+- **Validación** (si falla, no publica): líneas = subtotales, I+II+III = TOTAL, AFPs = Total SPP, F0+F1+F2+F3 = Total.
+  Descuadres chicos de la propia SBS entre líneas y subtotal quedan como "Sin desglose (diferencia SBS)" con aviso.
+- **Agrupaciones:** *Clase de activo* (Soberanos PEN, Liquidez, RF corporativa local, RF exterior directa, RV local,
+  Fondos del exterior, Alternativos), *Emisor (SBS)* y *Categorías Excel* (las 11 del Excel original;
+  validadas contra sus 89 cortes: diferencia máx. 0.0002 pp).
+- **Datos:** `data/afp/raw/AAAA-MM-DD.json` (un corte por semana, desde 31-dic-2020), `data/afp/hist_{TOTAL,F0..F3}.json`
+  (series por grupo) y `data/afp/latest.json` (detalle de líneas, comparativos y cruce MEF vs SBS).
+- **Workflow:** `update-afp.yml` corre sábados y martes. *Run workflow* con `desde = AAAA-MM` re-descarga desde ese mes.
+
+```bash
+python scripts/fetch_sbs_afp.py                       # semanas nuevas
+python scripts/fetch_sbs_afp.py --desde 2026-01       # re-descarga desde ese mes de publicación
+python scripts/fetch_sbs_afp.py --rebuild             # re-agrega desde data/afp/raw
+```
+
+Para verlo localmente hay que servirlo (`python -m http.server`), porque el tab AFPs lee los JSON con `fetch`.
+
 ## Publicar en GitHub Pages
 
 1. Sube este repositorio a GitHub

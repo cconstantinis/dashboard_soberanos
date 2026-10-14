@@ -256,6 +256,61 @@
       border-radius: 50%;
       flex-shrink: 0;
     }
+    /* ── Tabs ── */
+    .tabs { background: var(--navy); display: flex; gap: 4px; padding: 0 32px; }
+    .tab-btn {
+      background: transparent; color: rgba(255,255,255,.65); border: 0; cursor: pointer;
+      padding: 10px 16px; font: inherit; font-size: .82rem; font-weight: 600;
+      border-bottom: 3px solid transparent;
+    }
+    .tab-btn:hover { color: #fff; }
+    .tab-btn.active { color: #fff; border-bottom-color: var(--red); }
+    .tab-panel[hidden] { display: none; }
+    @media (max-width: 700px) { .tabs { padding: 0 16px; } .header { padding: 14px 16px; } }
+
+    /* ── AFP controls ── */
+    .afp-controls {
+      display: flex; flex-wrap: wrap; gap: 12px 20px; align-items: center;
+      background: var(--white); border: 1px solid var(--border); border-radius: 10px;
+      padding: 12px 16px; margin-top: 4px;
+    }
+    .ctl { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .ctl-label { font-size: .68rem; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: var(--slate); }
+    .seg { display: inline-flex; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+    .seg button {
+      background: var(--white); border: 0; border-right: 1px solid var(--border); cursor: pointer;
+      padding: 6px 11px; font: inherit; font-size: .76rem; color: var(--navy);
+    }
+    .seg button:last-child { border-right: 0; }
+    .seg button:hover { background: var(--light); }
+    .seg button.on { background: var(--navy); color: #fff; font-weight: 600; }
+    .afp-select {
+      font: inherit; font-size: .76rem; padding: 5px 8px; border: 1px solid var(--border);
+      border-radius: 8px; background: var(--white); color: var(--navy);
+    }
+    .afp-note { font-size: .7rem; color: var(--slate); margin-left: auto; }
+    .card-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; }
+    .card-head .chart-title { margin-bottom: 0; }
+    .kpi-card.k-afp::before { background: var(--navy); }
+    .kpi-card.k-sob::before { background: #2a78d6; }
+    .kpi-card.k-ext::before { background: #4F6772; }
+    .kpi-card.k-liq::before { background: #eb6834; }
+    .kpi-card.k-rv::before  { background: #eda100; }
+    .kpi-card.k-fx::before  { background: #e87ba4; }
+    .tbl-afp td.grp { cursor: pointer; }
+    .tbl-afp td.grp::before { content: "▸ "; color: var(--slate); }
+    .tbl-afp tr.open td.grp::before { content: "▾ "; }
+    .tbl-afp tr.det td { font-size: .72rem; color: var(--slate); background: #F7F9FA; }
+    .tbl-afp tr.det td:first-child { font-weight: 400; padding-left: 28px; color: var(--slate); white-space: normal; min-width: 260px; }
+    .tbl-afp th.sep, .tbl-afp td.sep { border-left: 1px solid var(--border); }
+    .tbl-afp tfoot td { font-size: .76rem; }
+    .swatch { display: inline-block; width: 9px; height: 9px; border-radius: 2px; margin-right: 6px; vertical-align: 0; }
+    .afp-empty { padding: 40px; text-align: center; color: var(--slate); }
+    .chart-card, .table-card { min-width: 0; }
+    @media (max-width: 700px) {
+      .charts-2, .charts-3, .charts-4 { grid-template-columns: minmax(0, 1fr); }
+      .afp-note { margin-left: 0; }
+    }
   </style>
 </head>
 <body>
@@ -274,12 +329,19 @@
   </div>
   <div style="display:flex;align-items:center;gap:12px;">
     <div style="text-align:right;">
-      <div style="font-size:.72rem;opacity:.65;">Período</div>
+      <div id="periodo-label" style="font-size:.72rem;opacity:.65;">Período</div>
       <div id="periodo-badge" class="header-badge">—</div>
     </div>
   </div>
 </div>
 
+<!-- Tabs -->
+<nav class="tabs">
+  <button class="tab-btn active" data-tab="sob">Soberanos (MEF)</button>
+  <button class="tab-btn" data-tab="afps">AFPs (SBS)</button>
+</nav>
+
+<section id="tab-sob" class="tab-panel">
 <div class="container">
 
   <!-- KPI Section -->
@@ -371,6 +433,90 @@
   </div>
 
 </div>
+
+</section>
+
+<section id="tab-afps" class="tab-panel" hidden>
+<div class="container">
+
+  <div class="afp-controls">
+    <div class="ctl"><span class="ctl-label">Fondo</span>
+      <div class="seg" id="afp-fondo">
+        <button data-v="TOTAL" class="on">Total</button><button data-v="F0">Fondo 0</button><button data-v="F1">Fondo 1</button><button data-v="F2">Fondo 2</button><button data-v="F3">Fondo 3</button>
+      </div></div>
+    <div class="ctl"><span class="ctl-label">Agrupación</span>
+      <div class="seg" id="afp-vista">
+        <button data-v="clase" class="on">Clase de activo</button><button data-v="emisor">Emisor (SBS)</button><button data-v="excel">Categorías Excel</button>
+      </div></div>
+    <div class="afp-note" id="afp-note">—</div>
+  </div>
+
+  <div class="section-title" id="afp-kpi-title">Resumen</div>
+  <div class="kpi-grid" id="afp-kpis"></div>
+
+  <div class="section-title">Composición de cartera por AFP</div>
+  <div class="chart-card">
+    <div class="card-head">
+      <div class="chart-title" id="afp-comp-title">Composición (%)</div>
+    </div>
+    <div class="chart-wrap h300"><canvas id="afpComp"></canvas></div>
+    <div class="table-note" style="margin-top:8px">Operaciones en tránsito excluidas de las barras (ver tabla). % sobre el total de cartera de cada AFP.</div>
+  </div>
+
+  <div class="section-title">Evolución histórica</div>
+  <div class="charts-2">
+    <div class="chart-card">
+      <div class="card-head">
+        <div class="chart-title">% de la cartera por AFP</div>
+        <div class="ctl"><select class="afp-select" id="afp-grupo"></select>
+          <div class="seg" id="afp-rango"><button data-v="52">1A</button><button data-v="156">3A</button><button data-v="0" class="on">Todo</button></div></div>
+      </div>
+      <div class="chart-wrap h300"><canvas id="afpEvol"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="card-head">
+        <div class="chart-title">Composición en el tiempo (%)</div>
+        <select class="afp-select" id="afp-afp"></select>
+      </div>
+      <div class="chart-wrap h300"><canvas id="afpArea"></canvas></div>
+    </div>
+  </div>
+
+  <div class="section-title">Cambio semanal de posición (S/ MM)</div>
+  <div class="chart-card">
+    <div class="card-head">
+      <div class="chart-title" id="afp-flujo-title">Cambio semanal — últimas 26 semanas</div>
+    </div>
+    <div class="chart-wrap h260"><canvas id="afpFlujo"></canvas></div>
+    <div class="table-note" style="margin-top:8px">Cambio del valor de mercado: incluye compras/ventas y efecto precio (y tipo de cambio en lo del exterior).</div>
+  </div>
+
+  <div class="section-title">Detalle por grupo y AFP</div>
+  <div class="table-card">
+    <div class="table-header">
+      <h3 id="afp-tbl-title">Cartera por grupo</h3>
+      <div class="ctl"><span class="ctl-label">Δ vs</span>
+        <div class="seg" id="afp-comp"><button data-v="semana" class="on">Semana</button><button data-v="4sem">4 sem</button><button data-v="ytd">Inicio de año</button><button data-v="12m">12 meses</button></div></div>
+    </div>
+    <div class="table-wrap">
+      <table class="tbl-afp" id="afp-tbl"><thead id="afp-tbl-head"></thead><tbody id="afp-tbl-body"></tbody><tfoot id="afp-tbl-foot"></tfoot></table>
+    </div>
+    <div class="table-note" style="padding:8px 20px 12px" id="afp-tbl-note"></div>
+  </div>
+
+  <div class="section-title">Cruce MEF vs SBS — soberanos en manos de AFPs (S/ MM)</div>
+  <div class="chart-card">
+    <div class="chart-wrap h300"><canvas id="afpCruce"></canvas></div>
+    <div class="table-note" style="margin-top:8px">MEF: tenencia de "Pension Funds" del reporte mensual de tenencias (nominal y a precio sucio del reporte diario de fin de mes). SBS: "Bonos del Gobierno Central" del Total SPP en el corte semanal más cercano al cierre de mes (valor de mercado). La brecha puede reflejar bonos VAC/otros bonos del gobierno y bonos entregados en reporte al BCRP, que el MEF no registra como de las AFPs.</div>
+  </div>
+
+  <div class="footer">
+    Fuente: <strong>Superintendencia de Banca, Seguros y AFP (SBS)</strong> — Boletín Estadístico Semanal del SPP, Cuadros 8 a 12 —
+    <a href="https://www.sbs.gob.pe/app/stats_net/stats/EstadisticaBoletinSPPSemanal.aspx" target="_blank" style="color:var(--navy);">Boletín semanal</a>
+    · <span id="afp-footer-xls"></span>
+  </div>
+</div>
+</section>
 
 <script>
 // ──────────────────────────────────────────────
@@ -2478,6 +2624,293 @@ function renderFlujos(data) {
 }
 
 // ──────────────────────────────────────────────
+// Tab AFPs (SBS — Boletín Semanal del SPP)
+// Datos: data/afp/latest.json + data/afp/hist_{FONDO}.json (generados por scripts/fetch_sbs_afp.py)
+// ──────────────────────────────────────────────
+const AFP = {
+  latest: null, hist: {}, charts: {},
+  st: { fondo: "TOTAL", vista: "clase", grupo: "soberanos", afp: "Total SPP", rango: 0, comp: "semana" },
+  open: new Set(),
+};
+const AFP_NAMES = ["Habitat", "Integra", "Prima", "Profuturo"];
+const AFP_COL = { "Habitat": "#2a78d6", "Integra": "#eb6834", "Prima": "#1baf7a", "Profuturo": "#eda100", "Total SPP": "#15192C" };
+const GRP_PAL = ["#2a78d6", "#eb6834", "#1baf7a", "#eda100", "#e87ba4", "#008300", "#6250d6", "#e34948",
+                 "#103981", "#7A92A1"];
+const GRP_GRIS = { otros: "#9AA6AE", transito: "#C9D1D6", x_resto_loc: "#9AA6AE", x_resto_ext: "#C9D1D6" };
+const nf = (n, d = 0) => (n ?? 0).toLocaleString("es-PE", { minimumFractionDigits: d, maximumFractionDigits: d });
+const fechaLarga = (iso) => new Date(iso + "T12:00:00").toLocaleDateString("es-PE", { day: "numeric", month: "short", year: "numeric" });
+const fechaCorta = (iso) => new Date(iso + "T12:00:00").toLocaleDateString("es-PE", { day: "2-digit", month: "short", year: "2-digit" });
+
+async function afpFetch(path) {
+  const r = await fetch(path, { cache: "no-cache" });
+  if (!r.ok) throw new Error(path + " " + r.status);
+  return r.json();
+}
+async function afpHist(f) {
+  if (!AFP.hist[f]) AFP.hist[f] = await afpFetch(`data/afp/hist_${f}.json`);
+  return AFP.hist[f];
+}
+function grupos(v) { return AFP.latest.vistas[v ?? AFP.st.vista]; }
+function colorGrupo(id, i) { return GRP_GRIS[id] ?? GRP_PAL[i % GRP_PAL.length]; }
+function serieGrupos(v) {  // grupos sin tránsito, con color fijo por posición en la vista
+  return grupos(v).map((g, i) => ({ ...g, color: colorGrupo(g.id, i) }));
+}
+function mk(id, cfg) {
+  if (AFP.charts[id]) AFP.charts[id].destroy();
+  AFP.charts[id] = new Chart(document.getElementById(id), cfg);
+}
+const yPct = { ticks: { callback: v => v + "%", font: { size: 10 } }, grid: { color: "#E3E8EC" } };
+const legendB = { position: "bottom", labels: { boxWidth: 10, font: { size: 11 } } };
+
+function segSet(id, val) {
+  document.querySelectorAll(`#${id} button`).forEach(b => b.classList.toggle("on", b.dataset.v == val));
+}
+function segBind(id, key, after) {
+  document.querySelectorAll(`#${id} button`).forEach(b => b.addEventListener("click", () => {
+    AFP.st[key] = isNaN(+b.dataset.v) || key !== "rango" ? b.dataset.v : +b.dataset.v;
+    segSet(id, b.dataset.v); after();
+  }));
+}
+
+// valores de un corte (detalle) agrupados por vista: {grupo: [5 AFPs]}
+function agrupar(det, v) {
+  const out = {};
+  grupos(v).forEach(g => out[g.id] = [0, 0, 0, 0, 0]);
+  det.lineas.forEach(l => { const g = l.g[v]; if (out[g]) l.v.forEach((x, i) => out[g][i] += x); });
+  return out;
+}
+
+function renderAfpKPIs(h) {
+  const n = h.fechas.length - 1, T = "Total SPP";
+  const tot = h.total[T], C = h.vistas.clase[T], E = h.vistas.emisor[T];
+  const i4 = Math.max(0, n - 4);
+  const pct = (arr, i) => arr[i] / tot[i] * 100;
+  const ext = i => ["ext_1", "ext_2", "ext_3", "ext_4", "ext_5"].reduce((s, g) => s + E[g][i], 0) / tot[i] * 100;
+  const dpp = (a, b) => { const d = a - b; const c = d > 0.005 ? "pos" : d < -0.005 ? "neg" : ""; return `<div class="kpi-delta ${c}">${d > 0 ? "+" : ""}${nf(d, 2)} pp vs 4 sem</div>`; };
+  const dsem = tot[n] - tot[n - 1];
+  const fondoN = AFP.latest.fondos[AFP.st.fondo].nombre;
+  document.getElementById("afp-kpi-title").textContent = `Resumen — ${fondoN} · Total SPP al ${fechaLarga(h.fechas[n])}`;
+  const card = (cls, lab, val, sub, delta) => `<div class="kpi-card ${cls}"><div class="kpi-label">${lab}</div>
+      <div class="kpi-value" style="font-size:1.45rem">${val}</div><div class="kpi-sub">${sub}</div>${delta}</div>`;
+  const g = (id, cls, lab) => card(cls, lab, nf(pct(C[id], n), 1) + "%", `S/ ${nf(C[id][n] / 1000, 1)} bn`, dpp(pct(C[id], n), pct(C[id], i4)));
+  document.getElementById("afp-kpis").innerHTML =
+    card("k-afp", "Fondo administrado", `S/ ${nf(tot[n] / 1000, 1)} bn`, "valor de mercado",
+      `<div class="kpi-delta ${dsem >= 0 ? "pos" : "neg"}">${dsem >= 0 ? "+" : ""}${nf(dsem)} MM en la semana</div>`) +
+    g("soberanos", "k-sob", "Soberanos PEN") +
+    card("k-ext", "Inversión en el exterior", nf(ext(n), 1) + "%", "del fondo", dpp(ext(n), ext(i4))) +
+    g("liquidez", "k-liq", "Liquidez") +
+    g("rv_local", "k-rv", "Renta variable local") +
+    g("fondos_ext", "k-fx", "Fondos del exterior");
+}
+
+function renderAfpComp(det) {
+  const v = AFP.st.vista, G = serieGrupos(v).filter(g => g.id !== "transito");
+  const agg = agrupar(det, v);
+  const labels = [...AFP_NAMES, "Total SPP"];
+  document.getElementById("afp-comp-title").textContent =
+    `Composición (%) — ${AFP.latest.fondos[AFP.st.fondo].nombre} · ${fechaLarga(det.fecha)}`;
+  const datasets = G.filter(g => agg[g.id].some(x => Math.abs(x) > 0.05)).map(g => ({
+    label: g.nombre, backgroundColor: g.color, borderColor: "#fff", borderWidth: 1,
+    data: agg[g.id].map((x, i) => det.total[i] ? x / det.total[i] * 100 : 0), barPercentage: 0.7,
+  }));
+  mk("afpComp", { type: "bar", data: { labels, datasets }, options: {
+    indexAxis: "y", responsive: true, maintainAspectRatio: false,
+    scales: { x: { stacked: true, min: 0, max: 103, afterBuildTicks: ax => { ax.ticks = ax.ticks.filter(t => t.value <= 100); }, ticks: { callback: v => v + "%", font: { size: 10 } }, grid: { color: "#E3E8EC" } },
+              y: { stacked: true, grid: { display: false }, ticks: { font: { size: 11, weight: "600" } } } },
+    plugins: { legend: legendB, tooltip: { callbacks: { label: c => `${c.dataset.label}: ${nf(c.parsed.x, 1)}%` } } },
+  } });
+}
+
+function rangoIdx(h) { const n = h.fechas.length; return AFP.st.rango ? Math.max(0, n - AFP.st.rango) : 0; }
+
+function renderAfpEvol(h) {
+  const v = AFP.st.vista, g = AFP.st.grupo, i0 = rangoIdx(h);
+  const labels = h.fechas.slice(i0).map(fechaCorta);
+  const datasets = [...AFP_NAMES, "Total SPP"].map(a => ({
+    label: a, borderColor: AFP_COL[a], backgroundColor: AFP_COL[a],
+    borderWidth: a === "Total SPP" ? 2.5 : 2, borderDash: a === "Total SPP" ? [5, 3] : [],
+    pointRadius: 0, pointHoverRadius: 4, tension: 0.15,
+    data: h.vistas[v][a][g].slice(i0).map((x, k) => { const t = h.total[a][k + i0]; return t ? x / t * 100 : null; }),
+  }));
+  mk("afpEvol", { type: "line", data: { labels, datasets }, options: {
+    responsive: true, maintainAspectRatio: false, interaction: { mode: "index", intersect: false },
+    scales: { y: yPct, x: { ticks: { maxTicksLimit: 10, maxRotation: 0, font: { size: 10 } }, grid: { display: false } } },
+    plugins: { legend: legendB, tooltip: { callbacks: { label: c => `${c.dataset.label}: ${nf(c.parsed.y, 2)}%` } } },
+  } });
+}
+
+function renderAfpArea(h) {
+  const v = AFP.st.vista, a = AFP.st.afp, i0 = rangoIdx(h);
+  const labels = h.fechas.slice(i0).map(fechaCorta);
+  const tot = h.total[a].slice(i0);
+  const datasets = serieGrupos(v).filter(g => g.id !== "transito")
+    .filter(g => h.vistas[v][a][g.id].some(x => Math.abs(x) > 0.05))
+    .map(g => ({ label: g.nombre, backgroundColor: g.color, borderColor: "#fff", borderWidth: 0.5,
+      fill: true, pointRadius: 0, tension: 0.1,
+      data: h.vistas[v][a][g.id].slice(i0).map((x, k) => tot[k] ? x / tot[k] * 100 : null) }));
+  mk("afpArea", { type: "line", data: { labels, datasets }, options: {
+    responsive: true, maintainAspectRatio: false, interaction: { mode: "index", intersect: false },
+    scales: { y: { ...yPct, stacked: true, max: 104, min: 0, afterBuildTicks: ax => { ax.ticks = ax.ticks.filter(t => t.value <= 100); } }, x: { ticks: { maxTicksLimit: 10, maxRotation: 0, font: { size: 10 } }, grid: { display: false } } },
+    plugins: { legend: legendB, tooltip: { callbacks: { label: c => `${c.dataset.label}: ${nf(c.parsed.y, 1)}%` } } },
+  } });
+}
+
+function renderAfpFlujo(h) {
+  const v = AFP.st.vista, g = AFP.st.grupo, n = h.fechas.length, i0 = Math.max(1, n - 26);
+  const gn = grupos(v).find(x => x.id === g)?.nombre ?? g;
+  document.getElementById("afp-flujo-title").textContent =
+    `Cambio semanal en ${gn} — ${AFP.latest.fondos[AFP.st.fondo].nombre}, últimas 26 semanas`;
+  const labels = h.fechas.slice(i0).map(fechaCorta);
+  const datasets = AFP_NAMES.map(a => ({
+    label: a, backgroundColor: AFP_COL[a], borderColor: "#fff", borderWidth: 1, borderRadius: 2,
+    data: h.fechas.slice(i0).map((_, k) => h.vistas[v][a][g][i0 + k] - h.vistas[v][a][g][i0 + k - 1]),
+  }));
+  mk("afpFlujo", { type: "bar", data: { labels, datasets }, options: {
+    responsive: true, maintainAspectRatio: false, interaction: { mode: "index", intersect: false },
+    scales: { x: { stacked: true, grid: { display: false }, ticks: { font: { size: 10 }, maxRotation: 0, autoSkip: true, maxTicksLimit: 13 } },
+              y: { stacked: true, grid: { color: "#E3E8EC" }, ticks: { font: { size: 10 }, callback: v => nf(v) } } },
+    plugins: { legend: legendB, tooltip: { callbacks: {
+      label: c => `${c.dataset.label}: ${c.parsed.y > 0 ? "+" : ""}${nf(c.parsed.y)} MM`,
+      footer: items => `Total: ${nf(items.reduce((s, i) => s + i.parsed.y, 0))} MM` } } },
+  } });
+}
+
+function renderAfpTabla() {
+  const f = AFP.st.fondo, v = AFP.st.vista, ck = AFP.st.comp;
+  const D = AFP.latest.detalle[f], A = D.ultimo, B = D[ck];
+  const aggA = agrupar(A, v), aggB = agrupar(B, v);
+  const cols = [...AFP_NAMES, "Total SPP"];
+  const compLbl = { semana: "semana previa", "4sem": "hace 4 semanas", ytd: "cierre del año anterior", "12m": "hace 12 meses" }[ck];
+  document.getElementById("afp-tbl-title").textContent = `Cartera por grupo — ${AFP.latest.fondos[f].nombre} · ${fechaLarga(A.fecha)}`;
+  document.getElementById("afp-tbl-note").textContent =
+    `% sobre el total de cartera de cada AFP. Δ en puntos porcentuales vs ${compLbl} (${fechaLarga(B.fecha)}). S/ MM a valor de mercado. Clic en un grupo para ver sus líneas.`;
+  document.getElementById("afp-tbl-head").innerHTML = `<tr><th>Grupo</th>${cols.map(a => `<th class="sep">${a} %</th><th>Δ pp</th>`).join("")}<th class="sep">Total S/ MM</th><th>Δ S/ MM</th></tr>`;
+  const cel = (x, tA, y, tB) => {
+    const p = tA ? x / tA * 100 : 0, q = tB ? y / tB * 100 : 0, d = p - q;
+    const c = d > 0.005 ? "pos" : d < -0.005 ? "neg" : "";
+    return `<td class="sep">${nf(p, 2)}</td><td class="${c}">${Math.abs(d) < 0.005 ? "—" : (d > 0 ? "+" : "") + nf(d, 2)}</td>`;
+  };
+  const sm = (x, y) => { const d = x - y; const c = d > 0.5 ? "pos" : d < -0.5 ? "neg" : "";
+    return `<td class="sep">${nf(x)}</td><td class="${c}">${Math.abs(d) < 0.5 ? "—" : (d > 0 ? "+" : "") + nf(d)}</td>`; };
+  let html = "";
+  serieGrupos(v).forEach(g => {
+    const a = aggA[g.id], b = aggB[g.id];
+    if (a.every(x => Math.abs(x) < 0.05) && b.every(x => Math.abs(x) < 0.05)) return;
+    const open = AFP.open.has(g.id);
+    html += `<tr class="grp-row${open ? " open" : ""}" data-g="${g.id}"><td class="grp"><span class="swatch" style="background:${g.color}"></span>${g.nombre}</td>` +
+      cols.map((_, i) => cel(a[i], A.total[i], b[i], B.total[i])).join("") + sm(a[4], b[4]) + `</tr>`;
+    if (open) {
+      const key = l => l.sec + l.sub + l.label;
+      const mapB = new Map(B.lineas.filter(l => l.g[v] === g.id).map(l => [key(l), l]));
+      A.lineas.filter(l => l.g[v] === g.id).forEach(l => {
+        const lb = mapB.get(key(l))?.v ?? [0, 0, 0, 0, 0];
+        if (l.v.every(x => Math.abs(x) < 0.05) && lb.every(x => Math.abs(x) < 0.05)) return;
+        const pre = (l.sec === "i" ? "Local" : l.sec === "ii" ? "Exterior" : "") + (l.sub ? " · " + ({1:"Gob.",2:"Sist. Fin.",3:"Emp. no Fin.",4:"Adm. Fondos",5:"Titulizadoras"}[l.sub]) : "");
+        html += `<tr class="det"><td>${l.label} <span style="opacity:.7">(${pre})</span></td>` +
+          cols.map((_, i) => cel(l.v[i], A.total[i], lb[i], B.total[i])).join("") + sm(l.v[4], lb[4]) + `</tr>`;
+      });
+    }
+  });
+  document.getElementById("afp-tbl-body").innerHTML = html;
+  document.getElementById("afp-tbl-foot").innerHTML = `<tr><td>Total cartera (S/ MM)</td>${cols.map((_, i) =>
+    `<td class="sep">${nf(A.total[i])}</td><td>${(A.total[i] - B.total[i]) > 0 ? "+" : ""}${nf(A.total[i] - B.total[i])}</td>`).join("")}<td class="sep">${nf(A.total[4])}</td><td></td></tr>`;
+  document.querySelectorAll("#afp-tbl-body tr.grp-row").forEach(tr => tr.addEventListener("click", () => {
+    const g = tr.dataset.g; AFP.open.has(g) ? AFP.open.delete(g) : AFP.open.add(g); renderAfpTabla();
+  }));
+}
+
+function renderAfpCruce() {
+  const c = (AFP.latest.cruce_mef ?? []).filter(r => r.sbs_bgc != null);
+  if (!c.length) return;
+  const labels = c.map(r => new Date(r.mes + "-15T12:00:00").toLocaleDateString("es-PE", { month: "short", year: "2-digit" }));
+  const ds = (label, key, color, dash) => ({ label, data: c.map(r => r[key]), borderColor: color, backgroundColor: color,
+    borderWidth: 2, borderDash: dash ?? [], pointRadius: 2, tension: 0.15 });
+  mk("afpCruce", { type: "line", data: { labels, datasets: [
+      ds("SBS — Bonos del Gobierno Central (mercado)", "sbs_bgc", "#2a78d6"),
+      ds("MEF — Pension Funds a precio sucio", "mef_mercado", "#eb6834"),
+      ds("MEF — Pension Funds nominal", "mef_nominal", "#7A92A1", [5, 3]),
+    ] }, options: {
+    responsive: true, maintainAspectRatio: false, interaction: { mode: "index", intersect: false },
+    scales: { y: { grid: { color: "#E3E8EC" }, ticks: { font: { size: 10 }, callback: v => nf(v) } },
+              x: { grid: { display: false }, ticks: { font: { size: 10 }, maxRotation: 0, autoSkip: true } } },
+    plugins: { legend: legendB, tooltip: { callbacks: {
+      label: x => `${x.dataset.label}: ${nf(x.parsed.y)}`,
+      footer: it => { const r = c[it[0].dataIndex]; return `Brecha SBS − MEF mercado: ${nf(r.sbs_bgc - r.mef_mercado)} MM`; } } } },
+  } });
+}
+
+function llenarSelects() {
+  const sel = document.getElementById("afp-grupo");
+  const G = grupos().filter(g => g.id !== "transito");
+  if (!G.some(g => g.id === AFP.st.grupo)) AFP.st.grupo = G[0].id;
+  sel.innerHTML = G.map(g => `<option value="${g.id}"${g.id === AFP.st.grupo ? " selected" : ""}>${g.nombre}</option>`).join("");
+  const s2 = document.getElementById("afp-afp");
+  if (!s2.options.length) s2.innerHTML = ["Total SPP", ...AFP_NAMES].map(a => `<option>${a}</option>`).join("");
+  s2.value = AFP.st.afp;
+}
+
+async function renderAfps() {
+  const h = await afpHist(AFP.st.fondo);
+  llenarSelects();
+  renderAfpKPIs(h);
+  renderAfpComp(AFP.latest.detalle[AFP.st.fondo].ultimo);
+  renderAfpEvol(h);
+  renderAfpArea(h);
+  renderAfpFlujo(h);
+  renderAfpTabla();
+}
+
+async function initAfps() {
+  if (AFP.latest) return;
+  const panel = document.getElementById("tab-afps");
+  try {
+    AFP.latest = await afpFetch("data/afp/latest.json");
+  } catch (e) {
+    panel.querySelector(".container").innerHTML = `<div class="afp-empty">No se pudieron cargar los datos de AFPs (${e.message}).<br>
+      Si abriste el archivo localmente, sírvelo con <code>python -m http.server</code>.</div>`;
+    return;
+  }
+  const m = AFP.latest.meta;
+  document.getElementById("afp-note").textContent =
+    `Corte ${fechaLarga(m.fecha)} · ${m.n_cortes} semanas desde ${fechaLarga(m.desde)} · ${m.unidad}`;
+  document.getElementById("afp-footer-xls").innerHTML = `<a href="${m.url_xls}" style="color:var(--navy)">último XLS</a>`;
+  segBind("afp-fondo", "fondo", renderAfps);
+  segBind("afp-vista", "vista", () => { AFP.open.clear(); renderAfps(); });
+  segBind("afp-rango", "rango", async () => { const h = await afpHist(AFP.st.fondo); renderAfpEvol(h); renderAfpArea(h); });
+  segBind("afp-comp", "comp", renderAfpTabla);
+  document.getElementById("afp-grupo").addEventListener("change", async e => {
+    AFP.st.grupo = e.target.value; const h = await afpHist(AFP.st.fondo); renderAfpEvol(h); renderAfpFlujo(h); });
+  document.getElementById("afp-afp").addEventListener("change", async e => {
+    AFP.st.afp = e.target.value; renderAfpArea(await afpHist(AFP.st.fondo)); });
+  await renderAfps();
+  renderAfpCruce();
+}
+
+// ── Tabs ──
+let PERIODO_SOB = "—";
+function mostrarTab(t) {
+  const afps = t === "afps";
+  document.getElementById("tab-sob").hidden = afps;
+  document.getElementById("tab-afps").hidden = !afps;
+  document.querySelectorAll(".tab-btn").forEach(b => b.classList.toggle("active", b.dataset.tab === t));
+  document.querySelector(".header-sub").textContent = afps
+    ? "Cartera administrada de las AFPs — SBS, Boletín Estadístico Semanal del SPP"
+    : "Reporte de Tenencias de Bonos Soberanos del Perú — MEF";
+  document.getElementById("periodo-label").textContent = afps ? "Corte" : "Período";
+  document.getElementById("periodo-badge").textContent = afps
+    ? (AFP.latest ? fechaCorta(AFP.latest.meta.fecha) : "…") : PERIODO_SOB;
+  if (afps) initAfps().then(() => {
+    if (AFP.latest && !document.getElementById("tab-afps").hidden)
+      document.getElementById("periodo-badge").textContent = fechaCorta(AFP.latest.meta.fecha);
+  });
+}
+window.addEventListener("hashchange", () => mostrarTab(location.hash === "#afps" ? "afps" : "sob"));
+document.querySelectorAll(".tab-btn").forEach(b => b.addEventListener("click", () => {
+  history.replaceState(null, "", b.dataset.tab === "afps" ? "#afps" : "#");
+  mostrarTab(b.dataset.tab);
+}));
+
+// ──────────────────────────────────────────────
 // Init
 // ──────────────────────────────────────────────
 async function init() {
@@ -2489,7 +2922,8 @@ async function init() {
   }
 
   // Período
-  document.getElementById("periodo-badge").textContent = data.meta?.periodo ?? "—";
+  PERIODO_SOB = data.meta?.periodo ?? "—";
+  document.getElementById("periodo-badge").textContent = PERIODO_SOB;
   if (data.meta?.fecha_daily) document.getElementById("outstanding-note").textContent =
     `En millones de PEN (MM PEN) · Yield, precio y D. Mod: reporte diario MEF del ${data.meta.fecha_daily}`;
   document.getElementById("pie-periodo").textContent = data.meta?.periodo_label ?? data.meta?.periodo ?? "";
@@ -2508,6 +2942,8 @@ async function init() {
   const loading = document.getElementById("loading");
   loading.classList.add("hidden");
   setTimeout(() => loading.remove(), 500);
+
+  mostrarTab(location.hash === "#afps" ? "afps" : "sob");
 }
 
 init();
